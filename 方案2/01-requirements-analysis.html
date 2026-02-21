@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微波研发部门研发管理平台 — 需求梳理与补全文档</title>
+<style>
+  :root { --primary: #1a56db; --secondary: #374151; --accent: #059669; --bg: #ffffff; --surface: #f9fafb; --border: #e5e7eb; --text: #111827; --text-muted: #6b7280; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @media print { body { font-size: 11pt; } .no-print { display: none; } .page-break { page-break-before: always; } }
+  body { font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; line-height: 1.8; color: var(--text); max-width: 1100px; margin: 0 auto; padding: 40px 60px; background: var(--bg); }
+  h1 { font-size: 2.2em; color: var(--primary); border-bottom: 3px solid var(--primary); padding-bottom: 15px; margin: 40px 0 20px; }
+  h2 { font-size: 1.6em; color: var(--primary); margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+  h3 { font-size: 1.3em; color: var(--secondary); margin: 25px 0 12px; }
+  h4 { font-size: 1.1em; color: var(--accent); margin: 20px 0 10px; }
+  p { margin: 10px 0; text-align: justify; }
+  ul, ol { margin: 10px 0 10px 25px; }
+  li { margin: 5px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.95em; }
+  th, td { border: 1px solid var(--border); padding: 10px 14px; text-align: left; }
+  th { background: var(--primary); color: white; font-weight: 600; }
+  tr:nth-child(even) { background: var(--surface); }
+  .cover { text-align: center; padding: 80px 0; margin-bottom: 40px; border-bottom: 3px double var(--primary); }
+  .cover h1 { border: none; font-size: 2.8em; margin-bottom: 10px; }
+  .cover .subtitle { font-size: 1.4em; color: var(--text-muted); margin-bottom: 30px; }
+  .cover .meta { font-size: 1em; color: var(--text-muted); line-height: 2; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.85em; font-weight: 500; margin: 2px; }
+  .badge-high { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+  .badge-medium { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+  .badge-low { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+  .badge-new { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+  .callout { padding: 16px 20px; border-left: 4px solid var(--primary); background: #eff6ff; border-radius: 0 8px 8px 0; margin: 15px 0; }
+  .callout-warn { border-left-color: #f59e0b; background: #fffbeb; }
+  .callout-success { border-left-color: var(--accent); background: #f0fdf4; }
+  .toc { background: var(--surface); padding: 25px 30px; border-radius: 10px; margin: 20px 0 40px; border: 1px solid var(--border); }
+  .toc h3 { margin-top: 0; color: var(--primary); }
+  .toc ul { list-style: none; margin-left: 0; }
+  .toc ul ul { margin-left: 20px; }
+  .toc li { margin: 6px 0; }
+  .toc a { color: var(--primary); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .section-num { color: var(--primary); font-weight: 700; margin-right: 6px; }
+  .diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 20px 0; text-align: center; }
+  .diagram svg { max-width: 100%; }
+  .req-card { border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin: 12px 0; background: white; }
+  .req-card h4 { margin-top: 0; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; background: var(--surface); border: 1px solid var(--border); margin: 2px; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>微波研发部门研发管理平台</h1>
+  <div class="subtitle">需求梳理与补全文档</div>
+  <div class="meta">
+    文档编号: RDP-REQ-2026-001<br>
+    版本: V1.0<br>
+    编制日期: 2026年2月20日<br>
+    密级: 内部公开<br>
+    状态: 初稿
+  </div>
+</div>
+
+<div class="toc">
+  <h3>目 录</h3>
+  <ul>
+    <li><a href="#ch1">1. 文档概述</a></li>
+    <li><a href="#ch2">2. 业务背景与目标</a></li>
+    <li><a href="#ch3">3. 组织架构分析</a>
+      <ul>
+        <li><a href="#ch3-1">3.1 团队结构梳理</a></li>
+        <li><a href="#ch3-2">3.2 角色与职责矩阵</a></li>
+        <li><a href="#ch3-3">3.3 业务流程全景</a></li>
+      </ul>
+    </li>
+    <li><a href="#ch4">4. 功能需求梳理（原始需求 + 补全）</a>
+      <ul>
+        <li><a href="#ch4-1">4.1 门户界面模块</a></li>
+        <li><a href="#ch4-2">4.2 用户管理模块</a></li>
+        <li><a href="#ch4-3">4.3 项目管理模块</a></li>
+        <li><a href="#ch4-4">4.4 项目开发模块</a></li>
+        <li><a href="#ch4-5">4.5 产品货架模块</a></li>
+        <li><a href="#ch4-6">4.6 技术货架模块</a></li>
+        <li><a href="#ch4-7">4.7 知识库模块</a></li>
+        <li><a href="#ch4-8">4.8 技术论坛模块</a></li>
+        <li><a href="#ch4-9">4.9 即时通信模块</a></li>
+      </ul>
+    </li>
+    <li><a href="#ch5">5. 非功能需求补全</a></li>
+    <li><a href="#ch6">6. 集成需求补全</a></li>
+    <li><a href="#ch7">7. 数据需求补全</a></li>
+    <li><a href="#ch8">8. 需求优先级与分期规划</a></li>
+    <li><a href="#ch9">9. 需求追踪矩阵</a></li>
+  </ul>
+</div>
+
+<h1 id="ch1"><span class="section-num">1.</span> 文档概述</h1>
+
+<h3>1.1 文档目的</h3>
+<p>本文档对微波研发部门提出的研发管理平台需求进行系统性梳理，识别原始需求中的隐含要求和缺失项，并进行完整补全。梳理后的需求将作为后续《详细实施方案》和《需求规格说明书》的输入基线。</p>
+
+<h3>1.2 适用范围</h3>
+<p>本文档适用于微波研发部门全体人员，涵盖产品管理、产品开发、技术开发三个实体团队及综合管理虚拟团队。平台将部署在<strong>离线局域网环境</strong>，支持日常研发管理的全部业务流程。</p>
+
+<h3>1.3 术语定义</h3>
+<table>
+  <tr><th>术语</th><th>定义</th></tr>
+  <tr><td>IPD</td><td>集成产品开发（Integrated Product Development），华为引入的产品开发管理体系</td></tr>
+  <tr><td>DCP</td><td>决策评审点（Decision Checkpoint），项目关键里程碑评审</td></tr>
+  <tr><td>单机</td><td>微波系统中的独立功能单元，由多个模块集成而成</td></tr>
+  <tr><td>通用模块</td><td>可在多个单机产品中复用的标准化功能模块</td></tr>
+  <tr><td>产品货架</td><td>经过验证和审批的成熟产品/模块集合，供设计师选用集成</td></tr>
+  <tr><td>技术货架</td><td>部门已掌握的技术能力集合，含方法、电路、算法等</td></tr>
+  <tr><td>L1-L4流程</td><td>四级流程体系，L1最粗(战略级)，L4最细(活动级)</td></tr>
+  <tr><td>RFSoC</td><td>射频系统芯片（Radio Frequency System on Chip）</td></tr>
+  <tr><td>SDR</td><td>软件定义无线电（Software Defined Radio）</td></tr>
+</table>
+
+<h1 id="ch2"><span class="section-num">2.</span> 业务背景与目标</h1>
+
+<h3>2.1 业务背景</h3>
+<p>微波研发部门承担通信和探测微波系统的研发工作，产品线涵盖A、B、C三类产品。部门采用<strong>"平台化+模块化"</strong>的研发策略：技术开发团队负责通用模块和技术的研发，产品开发团队通过选用货架模块进行单机集成，产品管理团队负责需求对接和产品全生命周期管理。</p>
+<p>当前面临的核心问题：</p>
+<ul>
+  <li>研发知识分散在个人电脑，缺乏组织级沉淀和复用机制</li>
+  <li>项目管理依赖线下手段（Excel/邮件/会议），进度跟踪困难</li>
+  <li>产品/技术复用率低，缺乏便捷的货架选用机制</li>
+  <li>设计文档版本管理混乱，协同效率低下</li>
+  <li>流程执行靠人工驱动，缺乏数字化流程引擎</li>
+</ul>
+
+<h3>2.2 建设目标</h3>
+<div class="callout">
+  <strong>总体目标：</strong>建设一套面向微波研发部门的一体化研发管理平台，实现项目管理数字化、研发流程自动化、知识资产结构化、产品技术货架化，提升研发效率和产品复用率。
+</div>
+<ul>
+  <li><strong>G1-流程数字化：</strong>将L1-L4级研发流程固化到系统中，实现流程驱动的项目执行</li>
+  <li><strong>G2-知识资产化：</strong>建立组织级知识库，实现知识的采集、分类、检索和智能推荐</li>
+  <li><strong>G3-产品货架化：</strong>将成熟产品和技术上架管理，支持一键选用和集成</li>
+  <li><strong>G4-协同高效化：</strong>提供即时通信、论坛、项目协同等工具，打通团队沟通壁垒</li>
+  <li><strong>G5-管理可视化：</strong>通过仪表盘、甘特图、统计报表等实现管理决策的数据支撑</li>
+</ul>
+
+<h3>2.3 约束条件</h3>
+<table>
+  <tr><th>约束类型</th><th>约束内容</th><th>影响</th></tr>
+  <tr><td>网络环境</td><td>离线局域网部署，不可连接互联网</td><td>所有依赖需离线可用，无法使用CDN或云服务</td></tr>
+  <tr><td>安全保密</td><td>涉密环境，数据不可外泄</td><td>需严格权限控制、审计日志、数据加密</td></tr>
+  <tr><td>本地工具集成</td><td>需与Altium Designer、Obsidian、Zotero等本地软件联动</td><td>需设计本地协议注册和文件关联机制</td></tr>
+  <tr><td>用户规模</td><td>部门级（预计30-100人）</td><td>不需要大规模分布式架构</td></tr>
+  <tr><td>技术能力</td><td>使用方以设计师为主，非专业IT人员</td><td>操作界面需简洁友好，降低学习成本</td></tr>
+</table>
+
+<h1 id="ch3" class="page-break"><span class="section-num">3.</span> 组织架构分析</h1>
+
+<h3 id="ch3-1">3.1 团队结构梳理</h3>
+
+<div class="diagram">
+<svg width="900" height="520" viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#1a56db;stop-opacity:1"/><stop offset="100%" style="stop-color:#1e40af;stop-opacity:1"/></linearGradient>
+    <linearGradient id="g2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#059669;stop-opacity:1"/><stop offset="100%" style="stop-color:#047857;stop-opacity:1"/></linearGradient>
+    <linearGradient id="g3" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#d97706;stop-opacity:1"/><stop offset="100%" style="stop-color:#b45309;stop-opacity:1"/></linearGradient>
+    <linearGradient id="g4" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1"/><stop offset="100%" style="stop-color:#6d28d9;stop-opacity:1"/></linearGradient>
+  </defs>
+  <!-- 部门 -->
+  <rect x="325" y="10" width="250" height="46" rx="8" fill="url(#g1)"/>
+  <text x="450" y="38" text-anchor="middle" fill="white" font-size="16" font-weight="bold">微波研发部门</text>
+  <!-- 连线 -->
+  <line x1="380" y1="56" x2="140" y2="95" stroke="#cbd5e1" stroke-width="2"/>
+  <line x1="450" y1="56" x2="450" y2="95" stroke="#cbd5e1" stroke-width="2"/>
+  <line x1="520" y1="56" x2="760" y2="95" stroke="#cbd5e1" stroke-width="2"/>
+  <line x1="450" y1="56" x2="450" y2="80" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="5,3"/>
+  <!-- 产品管理 -->
+  <rect x="30" y="95" width="220" height="42" rx="6" fill="url(#g2)"/>
+  <text x="140" y="121" text-anchor="middle" fill="white" font-size="14" font-weight="bold">产品管理团队</text>
+  <rect x="15" y="150" width="115" height="32" rx="4" fill="#d1fae5" stroke="#059669"/>
+  <text x="72" y="170" text-anchor="middle" fill="#065f46" font-size="12">型号管理</text>
+  <rect x="140" y="150" width="115" height="32" rx="4" fill="#d1fae5" stroke="#059669"/>
+  <text x="197" y="170" text-anchor="middle" fill="#065f46" font-size="12">可靠性管理</text>
+  <!-- 产品开发 -->
+  <rect x="310" y="95" width="280" height="42" rx="6" fill="url(#g3)"/>
+  <text x="450" y="121" text-anchor="middle" fill="white" font-size="14" font-weight="bold">产品开发团队</text>
+  <rect x="310" y="150" width="85" height="32" rx="4" fill="#fef3c7" stroke="#d97706"/>
+  <text x="352" y="170" text-anchor="middle" fill="#92400e" font-size="12">A产品线</text>
+  <rect x="405" y="150" width="85" height="32" rx="4" fill="#fef3c7" stroke="#d97706"/>
+  <text x="447" y="170" text-anchor="middle" fill="#92400e" font-size="12">B产品线</text>
+  <rect x="500" y="150" width="85" height="32" rx="4" fill="#fef3c7" stroke="#d97706"/>
+  <text x="542" y="170" text-anchor="middle" fill="#92400e" font-size="12">C产品线</text>
+  <!-- 技术开发 -->
+  <rect x="650" y="95" width="220" height="42" rx="6" fill="url(#g1)"/>
+  <text x="760" y="121" text-anchor="middle" fill="white" font-size="14" font-weight="bold">技术开发团队</text>
+  <rect x="640" y="150" width="100" height="32" rx="4" fill="#dbeafe" stroke="#1a56db"/>
+  <text x="690" y="170" text-anchor="middle" fill="#1e3a5f" font-size="11">天线设计</text>
+  <rect x="750" y="150" width="100" height="32" rx="4" fill="#dbeafe" stroke="#1a56db"/>
+  <text x="800" y="170" text-anchor="middle" fill="#1e3a5f" font-size="11">射频设计</text>
+  <rect x="640" y="192" width="100" height="32" rx="4" fill="#dbeafe" stroke="#1a56db"/>
+  <text x="690" y="212" text-anchor="middle" fill="#1e3a5f" font-size="11">数字设计</text>
+  <rect x="750" y="192" width="100" height="32" rx="4" fill="#dbeafe" stroke="#1a56db"/>
+  <text x="800" y="212" text-anchor="middle" fill="#1e3a5f" font-size="11">电源设计</text>
+  <!-- 综合管理 -->
+  <rect x="265" y="220" width="200" height="36" rx="6" fill="url(#g4)" stroke-dasharray="6,3" stroke="white" stroke-width="1"/>
+  <text x="365" y="243" text-anchor="middle" fill="white" font-size="13" font-weight="bold">综合管理（虚拟团队）</text>
+  <g transform="translate(230, 268)">
+    <rect x="0" y="0" width="60" height="26" rx="4" fill="#ede9fe" stroke="#7c3aed"/><text x="30" y="17" text-anchor="middle" fill="#5b21b6" font-size="10">安全</text>
+    <rect x="68" y="0" width="60" height="26" rx="4" fill="#ede9fe" stroke="#7c3aed"/><text x="98" y="17" text-anchor="middle" fill="#5b21b6" font-size="10">保密</text>
+    <rect x="136" y="0" width="60" height="26" rx="4" fill="#ede9fe" stroke="#7c3aed"/><text x="166" y="17" text-anchor="middle" fill="#5b21b6" font-size="10">档案</text>
+    <rect x="204" y="0" width="60" height="26" rx="4" fill="#ede9fe" stroke="#7c3aed"/><text x="234" y="17" text-anchor="middle" fill="#5b21b6" font-size="10">宣传</text>
+  </g>
+  <g transform="translate(265, 302)">
+    <rect x="0" y="0" width="60" height="26" rx="4" fill="#ede9fe" stroke="#7c3aed"/><text x="30" y="17" text-anchor="middle" fill="#5b21b6" font-size="10">6S</text>
+    <rect x="68" y="0" width="60" height="26" rx="4" fill="#ede9fe" stroke="#7c3aed"/><text x="98" y="17" text-anchor="middle" fill="#5b21b6" font-size="10">党建</text>
+  </g>
+  <!-- 图例 -->
+  <rect x="30" y="370" width="840" height="140" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+  <text x="50" y="395" font-size="14" font-weight="bold" fill="#334155">角色说明</text>
+  <text x="50" y="420" font-size="12" fill="#475569">设计师职称体系: 设计员 → 助理工程师 → 工程师 → 高级工程师(副高) → 研究员(正高)</text>
+  <text x="50" y="445" font-size="12" fill="#475569">射频设计师细分: 接收通道、功放、频率源、变频模块等方向</text>
+  <text x="50" y="470" font-size="12" fill="#475569">数字设计师工作: FPGA + ADC/SDR、RFSoC等硬件设计</text>
+  <text x="50" y="495" font-size="12" fill="#475569">系统角色: 管理员、部门领导、团队组长、设计师、其他(兼职综合管理人员)</text>
+</svg>
+</div>
+
+<h3 id="ch3-2">3.2 角色与职责矩阵</h3>
+<table>
+  <tr><th>角色</th><th>权限级别</th><th>核心职责</th><th>系统功能范围</th></tr>
+  <tr><td>系统管理员</td><td>最高</td><td>系统配置、用户管理、权限分配</td><td>全部模块管理权限</td></tr>
+  <tr><td>部门领导</td><td>高（可兼管理员）</td><td>部门管理、项目审批、资源统筹</td><td>项目审批、全局仪表盘、人员管理</td></tr>
+  <tr><td>团队组长</td><td>中</td><td>团队管理、任务分配、进度把控</td><td>本团队项目管理、任务分配、进度查看</td></tr>
+  <tr><td>设计师</td><td>标准</td><td>项目执行、设计开发、文档编写</td><td>个人项目开发、知识贡献、货架选用</td></tr>
+  <tr><td>综合管理人员</td><td>标准+特定</td><td>兼职管理（安全/保密/档案等）</td><td>对应管理模块 + 设计师基础权限</td></tr>
+  <tr><td>访客/其他</td><td>低</td><td>浏览查看</td><td>公开信息查看</td></tr>
+</table>
+
+<div class="callout badge-new">
+  <strong>补全项：</strong>原需求未明确的权限要求已补全——需要支持<strong>数据权限隔离</strong>（不同产品线设计师默认只能看到本产品线项目）和<strong>审批流权限</strong>（组长可审批团队内任务，部门领导审批跨团队资源调配）。
+</div>
+
+<h3 id="ch3-3">3.3 业务流程全景</h3>
+
+<div class="diagram">
+<svg width="860" height="340" viewBox="0 0 860 340" xmlns="http://www.w3.org/2000/svg">
+  <!-- 流程图 -->
+  <rect x="10" y="30" width="130" height="50" rx="6" fill="#dbeafe" stroke="#1a56db" stroke-width="2"/>
+  <text x="75" y="60" text-anchor="middle" fill="#1e3a5f" font-size="13" font-weight="bold">需求对接</text>
+  <text x="75" y="75" text-anchor="middle" fill="#6b7280" font-size="10">产品管理</text>
+  <path d="M140,55 L170,55" stroke="#1a56db" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <rect x="170" y="30" width="130" height="50" rx="6" fill="#dbeafe" stroke="#1a56db" stroke-width="2"/>
+  <text x="235" y="60" text-anchor="middle" fill="#1e3a5f" font-size="13" font-weight="bold">需求分析</text>
+  <text x="235" y="75" text-anchor="middle" fill="#6b7280" font-size="10">指标分解计算</text>
+  <path d="M300,55 L330,55" stroke="#1a56db" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="330" y="15" width="170" height="80" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+  <text x="415" y="42" text-anchor="middle" fill="#92400e" font-size="13" font-weight="bold">模块选用/开发</text>
+  <text x="415" y="60" text-anchor="middle" fill="#6b7280" font-size="10">查看产品货架 → 选用</text>
+  <text x="415" y="78" text-anchor="middle" fill="#6b7280" font-size="10">无合适模块 → 技术开发</text>
+  <path d="M500,55 L530,55" stroke="#d97706" stroke-width="2" marker-end="url(#arrow2)"/>
+
+  <rect x="530" y="30" width="130" height="50" rx="6" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
+  <text x="595" y="60" text-anchor="middle" fill="#065f46" font-size="13" font-weight="bold">单机集成</text>
+  <text x="595" y="75" text-anchor="middle" fill="#6b7280" font-size="10">产品开发</text>
+  <path d="M660,55 L690,55" stroke="#059669" stroke-width="2" marker-end="url(#arrow3)"/>
+
+  <rect x="690" y="30" width="140" height="50" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+  <text x="760" y="55" text-anchor="middle" fill="#5b21b6" font-size="13" font-weight="bold">测试 → 产品上架</text>
+  <text x="760" y="72" text-anchor="middle" fill="#6b7280" font-size="10">批产/入货架</text>
+
+  <!-- 技术开发分支 -->
+  <path d="M415,95 L415,140" stroke="#d97706" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow2)"/>
+  <rect x="330" y="140" width="170" height="50" rx="6" fill="#dbeafe" stroke="#1a56db" stroke-width="2"/>
+  <text x="415" y="165" text-anchor="middle" fill="#1e3a5f" font-size="13" font-weight="bold">模块/技术开发</text>
+  <text x="415" y="180" text-anchor="middle" fill="#6b7280" font-size="10">技术开发团队</text>
+  <path d="M500,165 L560,165 L560,80" stroke="#1a56db" stroke-width="2" stroke-dasharray="5,3"/>
+
+  <!-- 技术货架 -->
+  <rect x="330" y="210" width="170" height="44" rx="6" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="415" y="237" text-anchor="middle" fill="#991b1b" font-size="12" font-weight="bold">技术上架 → 技术货架</text>
+
+  <!-- 知识沉淀 -->
+  <rect x="600" y="140" width="230" height="44" rx="6" fill="#f0fdf4" stroke="#059669" stroke-width="1.5"/>
+  <text x="715" y="167" text-anchor="middle" fill="#065f46" font-size="12" font-weight="bold">设计知识 → 知识库沉淀</text>
+
+  <!-- Arrows def -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#1a56db"/></marker>
+    <marker id="arrow2" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#d97706"/></marker>
+    <marker id="arrow3" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
+  </defs>
+
+  <!-- 说明框 -->
+  <rect x="10" y="275" width="840" height="55" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+  <text x="30" y="298" font-size="12" font-weight="bold" fill="#334155">核心业务闭环:</text>
+  <text x="30" y="318" font-size="11" fill="#475569">需求 → 指标分解 → 模块选用(货架)/模块开发(技术开发) → 单机集成 → 测试验证 → 产品上架(货架) → 知识沉淀(知识库)</text>
+</svg>
+</div>
+
+<h1 id="ch4" class="page-break"><span class="section-num">4.</span> 功能需求梳理（原始需求 + 补全）</h1>
+
+<h2 id="ch4-1">4.1 门户界面模块</h2>
+
+<h4>原始需求</h4>
+<ul>
+  <li>参考 <code>github.com/Paniche/department_homepage</code>（React + Vite + TypeScript + Tailwind CSS）</li>
+  <li>在门户页面中增加"工作台"，将各功能模块集成到工作台中</li>
+</ul>
+
+<h4>需求补全 <span class="badge badge-new">补全</span></h4>
+<table>
+  <tr><th>功能项</th><th>详细描述</th><th>优先级</th></tr>
+  <tr><td>部门门户首页</td><td>展示部门简介、新闻公告、荣誉展示、快捷导航。参考department_homepage布局</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>个人工作台</td><td>登录后的个人工作中心：待办事项、我的项目、消息通知、快捷入口</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>全局搜索</td><td>跨模块全文搜索（项目、知识、产品、人员）</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>消息通知中心</td><td>系统通知、项目提醒、审批待办、@提及的统一入口</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>快捷操作面板</td><td>新建项目、新建文档、查看待办等常用操作一键直达</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>部门数据概览</td><td>项目总数/进行中/已完成、货架产品数、知识库文档数等统计看板</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>主题/布局设置</td><td>支持浅色/深色主题切换，工作台布局可定制</td><td><span class="badge badge-low">P2</span></td></tr>
+  <tr><td>响应式适配</td><td>适配常规桌面分辨率（1920×1080为主），兼顾笔记本屏幕</td><td><span class="badge badge-medium">P1</span></td></tr>
+</table>
+
+<h2 id="ch4-2">4.2 用户管理模块</h2>
+
+<h4>原始需求</h4>
+<ul>
+  <li>五类角色：管理员、部门领导、团队组长、设计师、其他</li>
+  <li>设计师按团队分组，含详细的专业方向和职称体系</li>
+  <li>管理员可设置角色，设置后有可视化标记</li>
+  <li>个人页面类似GitHub Profile：基本信息、荣誉、项目、能力图、活跃度</li>
+  <li>支持按团队/岗位查看成员</li>
+</ul>
+
+<h4>需求补全 <span class="badge badge-new">补全</span></h4>
+<table>
+  <tr><th>功能项</th><th>详细描述</th><th>优先级</th></tr>
+  <tr><td>用户注册/导入</td><td>支持管理员批量导入用户（Excel）、单个添加；首次登录强制改密</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>RBAC权限模型</td><td>基于角色的访问控制，支持角色继承（部门领导继承组长权限）</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>组织架构树</td><td>可视化组织架构图，支持拖拽调整，一目了然各团队编制</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>技能标签体系</td><td>为设计师标注技能标签（如"微带天线"、"GaN功放"、"FPGA时序"），支持按技能搜索</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>能力雷达图</td><td>用ECharts雷达图展示设计师多维能力评估（设计、仿真、测试、文档、创新等）</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>贡献热力图</td><td>类GitHub贡献日历，展示设计师平台使用活跃度（提交文档、完成任务等）</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>项目履历</td><td>个人页面展示历史参与项目列表、角色、成果</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>荣誉墙</td><td>展示获奖、专利、论文发表等荣誉</td><td><span class="badge badge-low">P2</span></td></tr>
+  <tr><td>密码策略</td><td>密码复杂度要求、定期更换提醒、登录失败锁定</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>操作审计日志</td><td>记录用户登录、权限变更、关键操作日志</td><td><span class="badge badge-high">P0</span></td></tr>
+</table>
+
+<h2 id="ch4-3">4.3 项目管理模块</h2>
+
+<h4>原始需求</h4>
+<ul>
+  <li>项目全生命周期管理：创建、计划、执行、跟踪、收尾</li>
+  <li>项目创建向导（五步流程）</li>
+  <li>项目类别：单机/模块/软件/技术开发/流程开发/知识库开发/产品上架</li>
+  <li>自动排程引擎 + 甘特图，支持MS Project导入导出</li>
+  <li>标准化项目文件夹，支持本地+服务器同步，Git版本管理</li>
+  <li>项目仪表盘：进度、成本、质量、风险多维可视化</li>
+</ul>
+
+<h4>需求补全 <span class="badge badge-new">补全</span></h4>
+<table>
+  <tr><th>功能项</th><th>详细描述</th><th>优先级</th></tr>
+  <tr><td>项目总览看板</td><td>全部门项目鸟瞰图，支持按产品线/时间/负责人/状态多维筛选排序</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>项目创建向导</td><td>五步引导：① 基本信息 → ② 类别选择 → ③ 流程绑定 → ④ 团队分配 → ⑤ 计划确认</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>流程模板库</td><td>预置各类别项目的标准流程模板，可自定义新建模板</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>甘特图组件</td><td>可交互甘特图，支持任务拖拽调整、依赖关系连线、关键路径标识</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>MS Project互操作</td><td>支持导入.mpp文件生成甘特图，支持导出为.mpp格式</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>项目文件夹管理</td><td>项目创建时自动生成标准目录结构；支持服务器-本地双向同步</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>Git版本控制</td><td>项目文件自动纳入Git管理，自动commit/push，版本历史可追溯</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>多维仪表盘</td><td>进度（甘特/燃尽图）、质量（问题数/趋势）、风险（风险矩阵）、资源（工时统计）</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>超期预警</td><td>任务到期前N天自动提醒，超期任务红色标识 + 通知责任人和上级</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>资源日历</td><td>按人员查看工作负荷、任务分布，避免资源冲突</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>项目模板</td><td>从历史成功项目一键创建模板，新项目可基于模板快速启动</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>项目归档</td><td>项目完成后一键归档，归档数据不可修改但可查看</td><td><span class="badge badge-medium">P1</span></td></tr>
+</table>
+
+<h2 id="ch4-4">4.4 项目开发模块</h2>
+
+<h4>原始需求</h4>
+<ul>
+  <li>不同项目类别有不同的开发界面和流程</li>
+  <li>流程可视化执行：流程全景图、活动高亮、输入输出交付物</li>
+  <li>任务面板：认领、进度填报、交付物上传、完成确认</li>
+  <li>问题与决策管理，DCP评审强制触发</li>
+  <li>Web端+本地软件联动（Markdown/Obsidian编辑、Altium Designer打开PCB文件）</li>
+  <li>文件Git版本管理，自动commit</li>
+  <li>活动完成自动更新项目进度到各关联模块</li>
+  <li>活动内容由流程模板决定，自动关联参考资料（通过标签）</li>
+</ul>
+
+<h4>需求补全 <span class="badge badge-new">补全</span></h4>
+<table>
+  <tr><th>功能项</th><th>详细描述</th><th>优先级</th></tr>
+  <tr><td>流程全景视图</td><td>BPMN风格的流程图，当前活动高亮，已完成/未开始状态区分</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>活动详情面板</td><td>展示活动定义、输入文档、输出模板、执行指南、参考资料</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>本地文件协议</td><td>注册自定义协议(rdp://)，点击文件可调用本地软件打开（Altium/Office/Obsidian等）</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>Web端Markdown编辑器</td><td>内置Markdown编辑器，支持实时预览、图片插入、表格、数学公式</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>文件预览引擎</td><td>Web端预览PDF/Office/图片/Gerber文件，生成预览格式副本</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>评审/反馈系统</td><td>活动内对输入文件提问/反馈，支持@通知、评论线程、修改追踪</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>自动化触发</td><td>活动完成 → 自动更新项目进度 → 通知下一活动负责人 → 触发后续流程</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>DCP评审门</td><td>关键节点强制评审，评审通过方可继续，记录评审意见和决策</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>并行活动支持</td><td>支持流程中的并行分支（如硬件设计和结构设计同步进行）</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>变更管理</td><td>需求/设计变更申请、影响分析、审批、执行、验证闭环</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>工时记录</td><td>设计师填报各活动实际工时，自动汇总到项目仪表盘</td><td><span class="badge badge-low">P2</span></td></tr>
+</table>
+
+<h2 id="ch4-5">4.5 产品货架模块</h2>
+
+<h4>原始需求</h4>
+<ul>
+  <li>分类浏览上架产品（单机/模块/软件/基础四类）</li>
+  <li>产品详情：介绍、图片、测试数据、应用履历、问题记录、开发人员等</li>
+  <li>类似淘宝/京东的"加入购物车"选用机制</li>
+  <li>基于产品相似创建新项目或迭代修改</li>
+  <li>多维度筛选：类型、规格、成熟度、授权方式</li>
+</ul>
+
+<h4>需求补全 <span class="badge badge-new">补全</span></h4>
+<table>
+  <tr><th>功能项</th><th>详细描述</th><th>优先级</th></tr>
+  <tr><td>产品卡片视图</td><td>类电商商品列表，展示缩略图、名称、型号、成熟度等级、负责人</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>成熟度标签</td><td>标记产品成熟度：研发中/初样/正样/定型/批产 五级</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>选用购物车</td><td>将产品资料包加入"选用清单"，一键导入项目文件夹</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>应用履历追踪</td><td>记录产品在各项目中的应用情况、性能表现、问题反馈</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>版本管理</td><td>产品迭代版本树，支持diff对比不同版本差异</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>替代关系维护</td><td>标记产品间的替代/升级关系，停产产品推荐替代品</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>技术支持入口</td><td>选用产品后可直接联系产品负责人获取技术支持</td><td><span class="badge badge-low">P2</span></td></tr>
+  <tr><td>基础件库</td><td>元器件、标准件（螺钉螺母等）、原材料（铝合金、介质基板等）的分类管理</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>自动上架触发</td><td>项目开发流程完成后自动触发产品上架流程</td><td><span class="badge badge-high">P0</span></td></tr>
+</table>
+
+<h2 id="ch4-6">4.6 技术货架模块</h2>
+
+<h4>原始需求</h4>
+<ul>
+  <li>展示部门技术树，分类分领域展示</li>
+  <li>技术详情页（可能无实物，方法/电路均可）</li>
+  <li>查看技术全部文件，支持相似创建/修改/迭代/补充</li>
+  <li>技术分类：设计技术、试验技术、仿真技术</li>
+</ul>
+
+<h4>需求补全 <span class="badge badge-new">补全</span></h4>
+<table>
+  <tr><th>功能项</th><th>详细描述</th><th>优先级</th></tr>
+  <tr><td>技术树可视化</td><td>树形/脑图展示技术体系：设计技术(集成/天线/射频/数字/电源/嵌入式)、试验、仿真</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>技术卡片</td><td>每项技术的卡片：名称、TRL等级、负责人、关联项目、文件数</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>TRL成熟度</td><td>技术就绪等级（TRL 1-9）标识和管理</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>技术关联图谱</td><td>展示技术间的依赖关系、演进路线</td><td><span class="badge badge-low">P2</span></td></tr>
+  <tr><td>fork创建新技术项目</td><td>基于现有技术fork创建新版本进行迭代开发</td><td><span class="badge badge-medium">P1</span></td></tr>
+</table>
+
+<h2 id="ch4-7">4.7 知识库模块</h2>
+
+<h4>原始需求</h4>
+<ul>
+  <li>分类体系：理论知识(电子书/论文/专利/专业知识)、标准规范、制度文件、流程说明(L1-L4)、正反面案例、仿真模型、软件使用指南</li>
+  <li>全文搜索、智能推荐、引用追踪</li>
+  <li>与Obsidian和Zotero集成，文件路径一致</li>
+</ul>
+
+<h4>需求补全 <span class="badge badge-new">补全</span></h4>
+<table>
+  <tr><th>功能项</th><th>详细描述</th><th>优先级</th></tr>
+  <tr><td>多级分类体系</td><td>支持至少三级分类目录，管理员可灵活配置分类树</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>全文检索引擎</td><td>基于Elasticsearch/MeiliSearch，支持中文分词、关键词高亮、模糊匹配</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>标签系统</td><td>知识条目支持多标签标注，用于自动关联到项目活动</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>Obsidian集成</td><td>Web端知识库目录与Obsidian Vault保持同步，支持双向同步</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>Zotero集成</td><td>引用Zotero文献库的分类和条目，论文PDF在线预览</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>Markdown渲染</td><td>Web端渲染Obsidian的Markdown文件，支持Wiki链接、嵌入、Callout等语法</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>知识审核流程</td><td>知识上传需审核后发布，确保内容质量</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>访问统计</td><td>知识条目浏览量、下载量、引用次数统计</td><td><span class="badge badge-low">P2</span></td></tr>
+  <tr><td>知识图谱</td><td>知识条目间的关联关系可视化，方便知识探索</td><td><span class="badge badge-low">P2</span></td></tr>
+  <tr><td>版本管理</td><td>知识文档更新记录、历史版本对比</td><td><span class="badge badge-medium">P1</span></td></tr>
+</table>
+
+<h2 id="ch4-8">4.8 技术论坛模块</h2>
+
+<h4>原始需求</h4>
+<ul>
+  <li>方便团队技术交流</li>
+</ul>
+
+<h4>需求补全 <span class="badge badge-new">补全</span></h4>
+<table>
+  <tr><th>功能项</th><th>详细描述</th><th>优先级</th></tr>
+  <tr><td>板块分类</td><td>按技术领域(天线/射频/数字/电源/仿真)和通用分类(求助/分享/讨论)设置版块</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>帖子发布</td><td>支持富文本/Markdown编辑，可插入图片、代码块、公式、文件附件</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>回复与评论</td><td>支持楼中楼回复、@提及、最佳答案标记</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>搜索与标签</td><td>帖子支持标签分类，全文搜索</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>积分/声望</td><td>发帖、回复、最佳答案等获取积分，激励技术分享</td><td><span class="badge badge-low">P2</span></td></tr>
+  <tr><td>知识库关联</td><td>优质帖子可一键归档至知识库对应分类</td><td><span class="badge badge-low">P2</span></td></tr>
+</table>
+
+<h2 id="ch4-9">4.9 即时通信模块</h2>
+
+<h4>原始需求</h4>
+<ul>
+  <li>网页端类似Mattermost（<code>github.com/mattermost/mattermost</code>，35.4K Stars，Go+React）</li>
+</ul>
+
+<h4>需求补全 <span class="badge badge-new">补全</span></h4>
+<table>
+  <tr><th>功能项</th><th>详细描述</th><th>优先级</th></tr>
+  <tr><td>频道管理</td><td>公开频道（按团队/项目）、私密频道、私聊</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>消息功能</td><td>文字、图片、文件发送，Markdown格式支持，消息引用</td><td><span class="badge badge-high">P0</span></td></tr>
+  <tr><td>项目频道自动创建</td><td>新建项目时自动创建项目沟通频道，添加项目成员</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>机器人集成</td><td>支持Webhook/Bot，项目状态变更自动推送到频道</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>消息搜索</td><td>历史消息全文搜索，按时间/人员/频道过滤</td><td><span class="badge badge-medium">P1</span></td></tr>
+  <tr><td>文件共享</td><td>频道内共享文件，支持预览和下载</td><td><span class="badge badge-medium">P1</span></td></tr>
+</table>
+
+<h1 id="ch5" class="page-break"><span class="section-num">5.</span> 非功能需求补全</h1>
+
+<div class="callout-warn callout">
+  <strong>说明：</strong>原始需求未涉及非功能需求，以下为根据业务场景和部署环境完整补全。
+</div>
+
+<h3>5.1 性能需求</h3>
+<table>
+  <tr><th>指标</th><th>要求</th></tr>
+  <tr><td>页面加载时间</td><td>首屏加载 ≤ 3秒（局域网环境）</td></tr>
+  <tr><td>API响应时间</td><td>常规接口 ≤ 500ms，复杂查询 ≤ 2秒</td></tr>
+  <tr><td>并发用户</td><td>支持至少50人同时在线</td></tr>
+  <tr><td>文件上传</td><td>单文件 ≤ 500MB，支持断点续传</td></tr>
+  <tr><td>搜索响应</td><td>全文搜索 ≤ 1秒（10万条文档级别）</td></tr>
+</table>
+
+<h3>5.2 安全需求</h3>
+<table>
+  <tr><th>需求项</th><th>描述</th></tr>
+  <tr><td>身份认证</td><td>用户名密码登录 + 可选二次验证（OTP）</td></tr>
+  <tr><td>会话管理</td><td>JWT Token，支持过期自动刷新，闲置超时自动退出</td></tr>
+  <tr><td>数据加密</td><td>传输层TLS加密，敏感数据（密码）存储加密（bcrypt）</td></tr>
+  <tr><td>操作审计</td><td>关键操作全量记录（登录、文件操作、权限变更、审批）</td></tr>
+  <tr><td>IP白名单</td><td>仅允许局域网指定IP段访问</td></tr>
+  <tr><td>防暴力破解</td><td>连续5次登录失败锁定账户30分钟</td></tr>
+</table>
+
+<h3>5.3 可用性需求</h3>
+<table>
+  <tr><th>需求项</th><th>描述</th></tr>
+  <tr><td>系统可用性</td><td>工作时间可用性 ≥ 99%（允许计划维护窗口）</td></tr>
+  <tr><td>数据备份</td><td>每日自动备份，支持手动备份，保留至少30天</td></tr>
+  <tr><td>故障恢复</td><td>数据库故障恢复时间 ≤ 1小时</td></tr>
+  <tr><td>浏览器支持</td><td>Chrome 90+、Edge 90+、Firefox 90+（局域网内统一浏览器）</td></tr>
+</table>
+
+<h3>5.4 可维护性需求</h3>
+<ul>
+  <li>模块化架构，各模块可独立部署、升级</li>
+  <li>配置外部化，核心参数可通过管理界面调整</li>
+  <li>完整的错误日志和运行监控</li>
+  <li>数据库Migration支持，版本升级不影响现有数据</li>
+</ul>
+
+<h1 id="ch6"><span class="section-num">6.</span> 集成需求补全</h1>
+
+<h3>6.1 本地软件集成</h3>
+<table>
+  <tr><th>软件</th><th>集成方式</th><th>功能描述</th></tr>
+  <tr><td>Altium Designer</td><td>自定义协议(rdp://) + 文件关联</td><td>点击.schdoc/.pcbdoc文件调用本地AD打开，自动创建项目文件</td></tr>
+  <tr><td>Obsidian</td><td>Vault目录同步 + obsidian://协议</td><td>知识库与Obsidian Vault双向同步，点击打开Obsidian编辑</td></tr>
+  <tr><td>Zotero</td><td>Zotero WebDAV/API + 文件路径映射</td><td>引用Zotero文献分类和条目，PDF在线预览</td></tr>
+  <tr><td>Microsoft Office</td><td>文件下载+本地打开 / OnlyOffice内嵌</td><td>Word/Excel/PPT在线预览或编辑</td></tr>
+  <tr><td>Microsoft Project</td><td>.mpp文件导入导出</td><td>甘特图与MS Project互操作</td></tr>
+  <tr><td>ANSYS/CST</td><td>仿真文件管理 + 参数记录</td><td>仿真模型文件在知识库中管理，参数可在线查看</td></tr>
+  <tr><td>Git</td><td>内置Gitea或直接调用git CLI</td><td>项目文件版本管理，自动commit/push</td></tr>
+</table>
+
+<h3>6.2 模块间集成</h3>
+<div class="diagram">
+<svg width="800" height="300" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+  <text x="400" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#1a56db">模块间数据流关系图</text>
+  <!-- 各模块 -->
+  <rect x="320" y="40" width="160" height="40" rx="6" fill="#1a56db"/><text x="400" y="65" text-anchor="middle" fill="white" font-size="13">项目管理</text>
+  <rect x="80" y="120" width="140" height="40" rx="6" fill="#059669"/><text x="150" y="145" text-anchor="middle" fill="white" font-size="13">项目开发</text>
+  <rect x="580" y="120" width="140" height="40" rx="6" fill="#d97706"/><text x="650" y="145" text-anchor="middle" fill="white" font-size="13">产品货架</text>
+  <rect x="80" y="220" width="140" height="40" rx="6" fill="#7c3aed"/><text x="150" y="245" text-anchor="middle" fill="white" font-size="13">知识库</text>
+  <rect x="320" y="220" width="160" height="40" rx="6" fill="#dc2626"/><text x="400" y="245" text-anchor="middle" fill="white" font-size="13">用户管理</text>
+  <rect x="580" y="220" width="140" height="40" rx="6" fill="#0891b2"/><text x="650" y="245" text-anchor="middle" fill="white" font-size="13">技术货架</text>
+  <rect x="330" y="130" width="140" height="30" rx="4" fill="#f59e0b"/><text x="400" y="150" text-anchor="middle" fill="white" font-size="11">即时通信</text>
+  <!-- 箭头标注 -->
+  <text x="230" y="90" font-size="10" fill="#6b7280">创建/状态同步</text>
+  <text x="520" y="90" font-size="10" fill="#6b7280">上架触发</text>
+  <text x="230" y="200" font-size="10" fill="#6b7280">知识沉淀</text>
+  <text x="520" y="200" font-size="10" fill="#6b7280">技术引用</text>
+  <text x="400" y="195" font-size="10" fill="#6b7280" text-anchor="middle">人员/权限</text>
+</svg>
+</div>
+
+<h1 id="ch7"><span class="section-num">7.</span> 数据需求补全</h1>
+
+<h3>7.1 核心数据实体</h3>
+<table>
+  <tr><th>数据实体</th><th>说明</th><th>预估数据量</th></tr>
+  <tr><td>用户(User)</td><td>部门全员信息、角色、技能、履历</td><td>50-200条</td></tr>
+  <tr><td>项目(Project)</td><td>项目基本信息、状态、团队、计划</td><td>100-1000条/年</td></tr>
+  <tr><td>活动(Activity)</td><td>流程中的具体活动/任务</td><td>1000-10000条/年</td></tr>
+  <tr><td>文件(File)</td><td>项目文件、知识文档、交付物</td><td>10000-100000个/年</td></tr>
+  <tr><td>产品(Product)</td><td>货架产品/模块信息</td><td>500-5000条</td></tr>
+  <tr><td>技术(Technology)</td><td>技术条目及关联信息</td><td>200-2000条</td></tr>
+  <tr><td>知识(Knowledge)</td><td>知识库条目（书、论文、标准等）</td><td>5000-50000条</td></tr>
+  <tr><td>流程模板(ProcessTemplate)</td><td>各类别流程定义</td><td>20-100条</td></tr>
+  <tr><td>消息(Message)</td><td>即时通信消息</td><td>高增长</td></tr>
+  <tr><td>论坛帖子(Post)</td><td>论坛内容</td><td>1000-10000条/年</td></tr>
+</table>
+
+<h3>7.2 数据存储策略</h3>
+<ul>
+  <li><strong>结构化数据：</strong>PostgreSQL（用户、项目、流程等业务数据）</li>
+  <li><strong>文件存储：</strong>服务器本地文件系统（Git仓库 + MinIO对象存储）</li>
+  <li><strong>全文索引：</strong>MeiliSearch / Elasticsearch（知识库、论坛搜索）</li>
+  <li><strong>缓存：</strong>Redis（会话、热点数据缓存）</li>
+</ul>
+
+<h1 id="ch8" class="page-break"><span class="section-num">8.</span> 需求优先级与分期规划</h1>
+
+<h3>8.1 分期建设规划</h3>
+<table>
+  <tr><th>阶段</th><th>时间</th><th>核心内容</th><th>交付物</th></tr>
+  <tr><td><strong>一期：基础骨架</strong></td><td>3个月</td><td>门户+用户管理+项目管理(基础)+即时通信(集成Mattermost)</td><td>可登录使用的基础平台</td></tr>
+  <tr><td><strong>二期：核心业务</strong></td><td>4个月</td><td>项目开发(流程引擎)+产品货架+技术货架+文件管理(Git集成)</td><td>完整研发管理流程上线</td></tr>
+  <tr><td><strong>三期：知识智能</strong></td><td>3个月</td><td>知识库(含Obsidian/Zotero集成)+技术论坛+全文搜索+智能推荐</td><td>知识管理体系上线</td></tr>
+  <tr><td><strong>四期：优化完善</strong></td><td>2个月</td><td>数据分析仪表盘+流程优化+用户体验提升+MS Project导入导出</td><td>全功能稳定版本</td></tr>
+</table>
+
+<h3>8.2 优先级矩阵</h3>
+<table>
+  <tr><th>优先级</th><th>标准</th><th>对应功能</th></tr>
+  <tr><td><span class="badge badge-high">P0 必须实现</span></td><td>业务不可或缺</td><td>登录认证、项目创建/管理、流程执行、文件管理、基础货架、即时通信</td></tr>
+  <tr><td><span class="badge badge-medium">P1 应该实现</span></td><td>显著提升效率</td><td>甘特图、全文搜索、仪表盘、Obsidian/Zotero集成、DCP评审、论坛</td></tr>
+  <tr><td><span class="badge badge-low">P2 可以延后</span></td><td>锦上添花</td><td>技术图谱、积分系统、智能推荐、主题定制、工时统计</td></tr>
+</table>
+
+<h1 id="ch9"><span class="section-num">9.</span> 需求追踪矩阵</h1>
+
+<table>
+  <tr><th>需求ID</th><th>需求名称</th><th>来源</th><th>模块</th><th>优先级</th><th>状态</th></tr>
+  <tr><td>REQ-001</td><td>部门门户首页</td><td>原始</td><td>门户</td><td>P0</td><td>已确认</td></tr>
+  <tr><td>REQ-002</td><td>个人工作台</td><td>原始</td><td>门户</td><td>P0</td><td>已确认</td></tr>
+  <tr><td>REQ-003</td><td>全局搜索</td><td>补全</td><td>门户</td><td>P1</td><td>待确认</td></tr>
+  <tr><td>REQ-004</td><td>RBAC权限管理</td><td>补全</td><td>用户</td><td>P0</td><td>待确认</td></tr>
+  <tr><td>REQ-005</td><td>用户Profile（类GitHub）</td><td>原始</td><td>用户</td><td>P1</td><td>已确认</td></tr>
+  <tr><td>REQ-006</td><td>项目创建向导</td><td>原始</td><td>项目管理</td><td>P0</td><td>已确认</td></tr>
+  <tr><td>REQ-007</td><td>甘特图排程</td><td>原始</td><td>项目管理</td><td>P0</td><td>已确认</td></tr>
+  <tr><td>REQ-008</td><td>项目文件夹+Git版本管理</td><td>原始</td><td>项目管理</td><td>P0</td><td>已确认</td></tr>
+  <tr><td>REQ-009</td><td>流程可视化执行</td><td>原始</td><td>项目开发</td><td>P0</td><td>已确认</td></tr>
+  <tr><td>REQ-010</td><td>本地软件联动</td><td>原始</td><td>项目开发</td><td>P0</td><td>已确认</td></tr>
+  <tr><td>REQ-011</td><td>产品货架浏览与选用</td><td>原始</td><td>产品货架</td><td>P0</td><td>已确认</td></tr>
+  <tr><td>REQ-012</td><td>技术树展示</td><td>原始</td><td>技术货架</td><td>P0</td><td>已确认</td></tr>
+  <tr><td>REQ-013</td><td>知识分类与全文搜索</td><td>原始</td><td>知识库</td><td>P0</td><td>已确认</td></tr>
+  <tr><td>REQ-014</td><td>Obsidian/Zotero集成</td><td>原始</td><td>知识库</td><td>P0</td><td>已确认</td></tr>
+  <tr><td>REQ-015</td><td>Mattermost即时通信</td><td>原始</td><td>即时通信</td><td>P0</td><td>已确认</td></tr>
+  <tr><td>REQ-016</td><td>技术论坛</td><td>原始</td><td>论坛</td><td>P1</td><td>已确认</td></tr>
+  <tr><td>REQ-017</td><td>操作审计日志</td><td>补全</td><td>安全</td><td>P0</td><td>待确认</td></tr>
+  <tr><td>REQ-018</td><td>数据备份与恢复</td><td>补全</td><td>运维</td><td>P0</td><td>待确认</td></tr>
+  <tr><td>REQ-019</td><td>MS Project导入导出</td><td>原始</td><td>项目管理</td><td>P1</td><td>已确认</td></tr>
+  <tr><td>REQ-020</td><td>变更管理</td><td>补全</td><td>项目开发</td><td>P1</td><td>待确认</td></tr>
+</table>
+
+<div class="callout-success callout" style="margin-top: 30px;">
+  <strong>梳理总结：</strong>原始需求覆盖了9大功能模块的核心场景。本文档在原始需求基础上，补全了<strong>非功能需求</strong>（性能/安全/可用性/可维护性）、<strong>集成需求</strong>（7类本地软件 + 模块间数据流）、<strong>数据需求</strong>（10类核心数据实体 + 存储策略），以及各模块中的隐含功能点共计<strong>50余项</strong>。建议按四期建设计划分步实施，一期聚焦基础骨架，二期攻克核心研发流程。
+</div>
+
+<footer style="margin-top: 60px; padding-top: 20px; border-top: 2px solid var(--border); text-align: center; color: var(--text-muted); font-size: 0.9em;">
+  <p>微波研发部门研发管理平台 — 需求梳理与补全文档 V1.0</p>
+  <p>© 2026 微波研发部门 | 内部文档</p>
+</footer>
+
+</body>
+</html>

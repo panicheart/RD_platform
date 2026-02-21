@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>需求规格说明书 | 研发管理平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #4a90e2;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            line-height: 1.6;
+            background: #f5f7fa;
+        }
+        .serif { font-family: 'Noto Serif SC', serif; }
+        
+        .toc-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--primary) 0%, #1e4a8a 100%);
+            color: white;
+            overflow-y: auto;
+            z-index: 50;
+            padding: 1.5rem;
+        }
+        
+        .main-content { margin-left: 280px; }
+        
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .user-story {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-left: 4px solid #0ea5e9;
+            border-radius: 0 12px 12px 0;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        @media (max-width: 1024px) {
+            .toc-fixed { transform: translateX(-100%); transition: transform 0.3s ease; }
+            .toc-fixed.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="toc-fixed">
+        <div class="mb-6">
+            <a href="index.html" class="text-white/80 hover:text-white text-sm flex items-center mb-4">
+                <i class="fas fa-arrow-left mr-2"></i>返回首页
+            </a>
+            <h2 class="text-xl font-bold serif">需求规格</h2>
+            <div class="h-px bg-white/30 my-4"></div>
+        </div>
+        <ul class="space-y-2 text-sm">
+            <li><a href="#overview" class="block py-2 px-3 rounded-lg hover:bg-white/10 transition-colors">文档概述</a></li>
+            <li><a href="#org" class="block py-2 px-3 rounded-lg hover:bg-white/10 transition-colors">组织架构</a></li>
+            <li><a href="#modules" class="block py-2 px-3 rounded-lg hover:bg-white/10 transition-colors">功能模块</a></li>
+            <li><a href="#workflow" class="block py-2 px-3 rounded-lg hover:bg-white/10 transition-colors">工作台设计</a></li>
+            <li><a href="#tech" class="block py-2 px-3 rounded-lg hover:bg-white/10 transition-colors">技术要求</a></li>
+            <li><a href="#stories" class="block py-2 px-3 rounded-lg hover:bg-white/10 transition-colors">用户故事</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <section class="bg-gradient-to-br from-green-600 to-green-800 text-white py-16">
+            <div class="container mx-auto px-8">
+                <div class="max-w-4xl">
+                    <div class="text-sm font-medium text-green-200 tracking-wider uppercase mb-4">需求规格说明书 v1.0</div>
+                    <h1 class="text-4xl font-bold serif mb-6">研发管理平台<br/>需求详情</h1>
+                    <p class="text-xl text-green-100">微波通信与探测系统研发部门数字化管理平台 - 详细需求定义</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="org" class="py-16 bg-white">
+            <div class="container mx-auto px-8">
+                <div class="max-w-5xl">
+                    <h2 class="text-3xl font-bold serif text-gray-800 mb-8">
+                        <i class="fas fa-sitemap text-blue-600 mr-3"></i>组织架构
+                    </h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="section-card p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                                    <i class="fas fa-cube text-blue-600 text-xl"></i>
+                                </div>
+                                <h3 class="text-lg font-bold">产品管理团队</h3>
+                            </div>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li>• 型号管理</li>
+                                <li>• 可靠性管理</li>
+                                <li>• 通信和探测微波系统需求对接</li>
+                                <li>• 需求分析</li>
+                                <li>• 产品批产保障</li>
+                            </ul>
+                        </div>
+
+                        <div class="section-card p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4">
+                                    <i class="fas fa-microchip text-green-600 text-xl"></i>
+                                </div>
+                                <h3 class="text-lg font-bold">产品开发团队</h3>
+                            </div>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li>• A产品线（硬件开发）</li>
+                                <li>• B产品线（硬件开发）</li>
+                                <li>• C产品线（硬件开发）</li>
+                                <li>• 通用模块集成实现单机功能</li>
+                                <li>• 性能指标分解与计算</li>
+                            </ul>
+                        </div>
+
+                        <div class="section-card p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mr-4">
+                                    <i class="fas fa-flask text-orange-600 text-xl"></i>
+                                </div>
+                                <h3 class="text-lg font-bold">技术开发团队</h3>
+                            </div>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li>• 天线设计师（微带、阵列、相控阵）</li>
+                                <li>• 射频设计师（接收通道、功放、频率源）</li>
+                                <li>• 数字设计师（FPGA+ADC/SDR）</li>
+                                <li>• 电源设计师（低压二次电源）</li>
+                                <li>• 通用模块/技术开发</li>
+                            </ul>
+                        </div>
+
+                        <div class="section-card p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
+                                    <i class="fas fa-user-friends text-purple-600 text-xl"></i>
+                                </div>
+                                <h3 class="text-lg font-bold">综合管理虚拟团队</h3>
+                            </div>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li>• 兼职人员组成</li>
+                                <li>• 安全管理、保密管理</li>
+                                <li>• 档案管理、宣传管理</li>
+                                <li>• 6S管理、党建管理</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="modules" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-8">
+                <div class="max-w-5xl">
+                    <h2 class="text-3xl font-bold serif text-gray-800 mb-8">
+                        <i class="fas fa-th-large text-indigo-600 mr-3"></i>功能模块
+                    </h2>
+                    
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="section-card p-6 text-center">
+                            <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-user-shield text-blue-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-800 mb-2">用户管理</h3>
+                            <p class="text-sm text-gray-600">组织架构、职称体系、RBAC权限、个人主页</p>
+                        </div>
+
+                        <div class="section-card p-6 text-center">
+                            <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-project-diagram text-green-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-800 mb-2">项目管理</h3>
+                            <p class="text-sm text-gray-600">项目创建、甘特图、MS Project集成</p>
+                        </div>
+
+                        <div class="section-card p-6 text-center">
+                            <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-code text-orange-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-800 mb-2">项目开发</h3>
+                            <p class="text-sm text-gray-600">流程执行、交付物管理、本地软件调用</p>
+                        </div>
+
+                        <div class="section-card p-6 text-center">
+                            <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-boxes text-purple-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-800 mb-2">产品货架</h3>
+                            <p class="text-sm text-gray-600">产品展示、分类浏览、成熟度评估</p>
+                        </div>
+
+                        <div class="section-card p-6 text-center">
+                            <div class="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-flask text-red-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-800 mb-2">技术货架</h3>
+                            <p class="text-sm text-gray-600">技术树展示、分类检索、技术沉淀</p>
+                        </div>
+
+                        <div class="section-card p-6 text-center">
+                            <div class="w-16 h-16 bg-teal-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-book text-teal-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-800 mb-2">知识库</h3>
+                            <p class="text-sm text-gray-600">分类管理、全文搜索、外部工具集成</p>
+                        </div>
+
+                        <div class="section-card p-6 text-center">
+                            <div class="w-16 h-16 bg-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-comments text-pink-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-800 mb-2">技术论坛</h3>
+                            <p class="text-sm text-gray-600">版块管理、发帖回帖、精华帖</p>
+                        </div>
+
+                        <div class="section-card p-6 text-center">
+                            <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-video text-indigo-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-800 mb-2">即时通信</h3>
+                            <p class="text-sm text-gray-600">Mattermost集成、频道、私聊</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="stories" class="py-16 bg-white">
+            <div class="container mx-auto px-8">
+                <div class="max-w-5xl">
+                    <h2 class="text-3xl font-bold serif text-gray-800 mb-8">
+                        <i class="fas fa-book-open text-purple-600 mr-3"></i>用户故事
+                    </h2>
+                    
+                    <div class="user-story">
+                        <div class="font-bold text-lg text-blue-800 mb-3">型号管理员 - 项目创建</div>
+                        <div class="text-gray-700 text-sm leading-relaxed">
+                            <strong>作为</strong> 型号管理员<br/>
+                            <strong>我希望</strong> 能够创建新的产品开发项目<br/>
+                            <strong>以便</strong> 启动产品开发流程<br/>
+                            <br/>
+                            <strong>验收标准：</strong><br/>
+                            • 可以通过向导创建项目<br/>
+                            • 可以选择项目类别<br/>
+                            • 可以绑定对应流程<br/>
+                            • 可以分配项目团队
+                        </div>
+                    </div>
+
+                    <div class="user-story">
+                        <div class="font-bold text-lg text-green-800 mb-3">产品线设计师 - 模块选用</div>
+                        <div class="text-gray-700 text-sm leading-relaxed">
+                            <strong>作为</strong> 产品线设计师<br/>
+                            <strong>我希望</strong> 能够从产品货架中选用成熟模块<br/>
+                            <strong>以便</strong> 快速完成产品设计<br/>
+                            <br/>
+                            <strong>验收标准：</strong><br/>
+                            • 可以浏览产品货架<br/>
+                            • 可以筛选和搜索产品<br/>
+                            • 可以将产品加入项目<br/>
+                            • 可以查看产品详细资料
+                        </div>
+                    </div>
+
+                    <div class="user-story">
+                        <div class="font-bold text-lg text-orange-800 mb-3">模块设计师 - 技术沉淀</div>
+                        <div class="text-gray-700 text-sm leading-relaxed">
+                            <strong>作为</strong> 模块设计师<br/>
+                            <strong>我希望</strong> 能够将开发成果沉淀到技术货架<br/>
+                            <strong>以便</strong> 团队共享和复用<br/>
+                            <br/>
+                            <strong>验收标准：</strong><br/>
+                            • 可以提交技术成果<br/>
+                            • 可以编写技术文档<br/>
+                            • 可以关联相关项目<br/>
+                            • 可以更新技术版本
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tech" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-8">
+                <div class="max-w-5xl">
+                    <h2 class="text-3xl font-bold serif text-gray-800 mb-8">
+                        <i class="fas fa-cogs text-red-600 mr-3"></i>技术要求
+                    </h2>
+                    
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="section-card p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mr-4">
+                                    <i class="fas fa-bolt text-red-600 text-xl"></i>
+                                </div>
+                                <h3 class="text-lg font-bold">性能要求</h3>
+                            </div>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li>• 页面加载 &lt; 3秒</li>
+                                <li>• API响应 &lt; 200ms</li>
+                                <li>• 并发用户 200+</li>
+                                <li>• 搜索响应 &lt; 200ms</li>
+                            </ul>
+                        </div>
+
+                        <div class="section-card p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mr-4">
+                                    <i class="fas fa-shield-alt text-yellow-600 text-xl"></i>
+                                </div>
+                                <h3 class="text-lg font-bold">安全要求</h3>
+                            </div>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li>• HTTPS/TLS 1.2+</li>
+                                <li>• 密码8位+复杂度</li>
+                                <li>• 会话30分钟超时</li>
+                                <li>• AES-256加密存储</li>
+                            </ul>
+                        </div>
+
+                        <div class="section-card p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4">
+                                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                                </div>
+                                <h3 class="text-lg font-bold">可用性</h3>
+                            </div>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li>• 系统可用性 ≥ 99.5%</li>
+                                <li>• 每日自动备份</li>
+                                <li>• 故障恢复 &lt; 30分钟</li>
+                                <li>• 灾难恢复 &lt; 4小时</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-gray-900 text-white py-8">
+            <div class="container mx-auto px-8">
+                <div class="max-w-5xl text-center">
+                    <p>需求规格说明书 | 微波通信与探测系统研发部门</p>
+                    <p class="text-sm text-gray-500 mt-2">编制日期：2026-02-20 | 版本：v1.0</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
