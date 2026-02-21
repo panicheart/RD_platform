@@ -1,0 +1,29 @@
+[Unit]
+Description=RDP API Server
+Documentation=https://github.com/your-org/rdp-platform
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=rdp
+Group=rdp
+WorkingDirectory=/opt/rdp
+ExecStart=/opt/rdp/bin/api
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5s
+
+Environment=RDP_ENV=production
+Environment=RDP_API_PORT=8080
+EnvironmentFile=-/opt/rdp/config/rdp-api.env
+
+LimitNOFILE=65536
+LimitNPROC=65536
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=rdp-api
+
+[Install]
+WantedBy=multi-user.target

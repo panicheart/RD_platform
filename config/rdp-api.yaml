@@ -1,0 +1,55 @@
+server:
+  port: 8080
+  mode: development
+
+database:
+  host: localhost
+  port: 5432
+  name: rdp
+  user: rdp
+  password: rdp_password
+  sslmode: disable
+  max_open_conns: 25
+  max_idle_conns: 5
+  conn_max_lifetime: 5m
+
+casdoor:
+  endpoint: http://localhost:8000
+  client_id: rdp-client
+  client_secret: rdp-secret
+  organization: rdp
+  application: rdp-app
+
+jwt:
+  secret: your-jwt-secret-change-in-production
+  access_token_ttl: 2h
+  refresh_token_ttl: 168h
+
+session:
+  timeout: 30m
+  warning_time: 25m
+
+file:
+  upload_dir: /opt/rdp/data/uploads
+  max_size: 524288000
+  allowed_types:
+    - .pdf
+    - .doc
+    - .docx
+    - .xls
+    - .xlsx
+    - .ppt
+    - .pptx
+    - .zip
+    - .rar
+    - .txt
+    - .md
+
+audit:
+  enabled: true
+  log_file: /opt/rdp/logs/audit.log
+
+logging:
+  level: info
+  format: json
+  output: /opt/rdp/logs/api.log
