@@ -2,6 +2,9 @@
 
 > **文档用途**: 本文档供 AI 编程助手参考，用于理解项目架构、技术栈和开发规范。
 > **最后更新**: 2026-02-21
+> **版本**: V1.2（AI Agent开发版）
+
+> **⚠️ 开发模式声明**: 本项目采用**AI Agent集群自主开发模式**，各功能模块由专门的AI Agent负责开发，PM-Agent（项目经理Agent）进行全局质量把控。本文档中所有"开发团队"、"负责人员"均指对应的AI Agent角色。
 
 ---
 
@@ -17,7 +20,7 @@
 | **目标用户** | 微波系统研发部门（约30-100人） |
 | **部署环境** | 离线局域网，systemd裸机部署 |
 | **开发语言** | 中文（界面）、英文（代码） |
-| **文档位置** | `方案3/` 目录为最新完整方案 |
+| **文档位置** | `方案/` 目录为项目文档 |
 
 ### 1.2 项目定位
 
@@ -32,23 +35,20 @@
 RD_platform/
 ├── 原始需求/                    # 原始需求文档（PDF）
 │   └── 研发平台需求.pdf
-├── 方案1/                       # 方案1：早期需求文档
-│   ├── 需求文档.md
-│   ├── 需求规格说明书.md
-│   └── 实施方案.md
-├── 方案2/                       # 方案2：中间版本文档
-│   ├── 01-requirements-analysis.html
-│   ├── 02-implementation-plan.html
-│   └── 03-requirements-specification.html
-└── 方案3/                       # 方案3：当前最终方案 ⭐
+└── 方案/                        # 项目文档
     ├── README.md                # 文档导航入口
-    ├── index.html               # HTML文档主页
-    ├── 01-implementation-plan.md    # 详细实施方案（1869行）
-    ├── 02-requirements-specification.md  # 需求规格说明书（1074行）
-    └── 03-deployment-correction.md   # 部署方案修正
+    ├── 01_需求文档.md
+    ├── 02_详细实施方案.md
+    ├── 03_需求规格说明书.md
+    ├── 技术架构分析报告.md
+    └── pdf-html/                # PDF和HTML版本
+        ├── 01-requirements-analysis.html
+        ├── 01-需求梳理与补全文档.pdf
+        ├── 02-implementation-plan.html
+        ├── 02-详细实施方案.pdf
+        ├── 03-requirements-specification.html
+        └── 03-需求规格说明书.pdf
 ```
-
-**注意**: 方案3为当前采用方案，所有实现应以此为准。方案1和方案2为历史参考。
 
 ---
 
@@ -58,16 +58,16 @@ RD_platform/
 
 | 层次 | 技术 | 版本 | 约束 |
 |------|------|------|------|
-| **前端框架** | React + TypeScript + Vite | React 18.x, TS 5.x, Vite 5.x | [MUST] 不可替换 |
+| **前端框架** | React + TypeScript + Vite | React 18.x, TS 5.x, Vite 5.x | [MUST] 单体应用，非微前端 |
 | **UI库** | Ant Design | 5.x | [MUST] 主UI库 |
-| **后端API** | Go (Gin framework) | Go 1.22+, Gin 1.9+ | [MUST] 核心 |
-| **数据库** | PostgreSQL | 16.x | [MUST] |
-| **缓存** | Redis | 7.x | [MUST] |
-| **搜索** | MeiliSearch | 1.x | [MUST] Phase 3 |
+| **后端API** | Go (Gin framework) | Go 1.22+, Gin 1.9+ | [MUST] 纯 Go 技术栈 |
+| **数据库** | PostgreSQL | 16.x | [MUST] 系统包安装 |
+| **缓存** | Redis | 7.x | [SHOULD] Phase 2 |
+| **搜索** | PostgreSQL全文搜索(早期) / MeiliSearch(后期) | — | [MUST] P1用PG, P3用Meili |
 | **Git服务** | Gitea | 1.22+ | [MUST] Phase 2 |
 | **认证** | Casdoor | Latest | [MUST] Phase 1 |
-| **IM** | Mattermost | Team Edition | [MUST] Phase 1 |
-| **存储** | MinIO | Latest | [MUST] |
+| **IM** | 内置通知(早期) / Mattermost(后期) | — | [SHOULD] P1内置, P3外接 |
+| **存储** | 本地文件系统 | — | [MUST] |
 | **服务管理** | systemd | — | [MUST] 裸机部署 |
 
 ### 2.2 前端技术栈详情
@@ -130,18 +130,14 @@ RD_platform/
 |------|------|------|
 | Nginx HTTP | 80 | HTTP入口 |
 | Nginx HTTPS | 443 | HTTPS入口 |
-| RDP Portal | 3000 | 前端Shell |
-| RDP Dev | 3001 | 项目开发模块 |
-| Gitea | 3002 | Git服务 |
-| Wiki.js | 3003 | 知识库（可选） |
+| RDP Portal | 3000 | 前端应用 |
+| Gitea | 3002 | Git服务(Phase 2) |
 | Casdoor | 8000 | 认证服务 |
 | RDP API | 8080 | 主API服务 |
-| Mattermost | 8065 | 即时通讯 |
 | PostgreSQL | 5432 | 主数据库 |
-| Redis | 6379 | 缓存/会话 |
-| MinIO API | 9000 | 对象存储API |
-| MinIO Console | 9001 | 对象存储控制台 |
-| MeiliSearch | 7700 | 搜索引擎 |
+| Redis | 6379 | 缓存(Phase 2) |
+| MeiliSearch | 7700 | 搜索引擎(Phase 3) |
+| Mattermost | 8065 | 即时通讯(Phase 3) |
 
 ---
 
@@ -153,13 +149,13 @@ RD_platform/
 |------|------|--------|----------|
 | 门户界面 (Portal) | Phase 1 | MUST | 部门首页、个人工作台、快捷导航 |
 | 用户管理 (User) | Phase 1 | MUST | 用户账户、组织架构、GitHub风格个人主页 |
-| 项目管理 (PM) | Phase 1/2 | MUST | 项目创建向导、甘特图、自动排程 |
+| 项目管理 (PM) | Phase 1 | MUST | 项目创建向导、甘特图、项目文件管理 |
 | 项目开发 (Dev) | Phase 2 | MUST | 流程执行、交付物管理、本地软件集成 |
 | 产品货架 (Shelf) | Phase 2 | MUST | 产品分类浏览、选用、版本管理 |
 | 技术货架 (Tech) | Phase 2 | MUST | 技术树展示、技术详情 |
 | 知识库 (KB) | Phase 3 | MUST | 知识分类、全文搜索、Obsidian集成 |
 | 技术论坛 (Forum) | Phase 3 | SHOULD | 帖子发布、回复、精华帖 |
-| 即时通信 (IM) | Phase 1 | MUST | Mattermost集成 |
+| 即时通信 (IM) | Phase 3 | SHOULD | Mattermost集成(可选内置通知) |
 
 ### 4.2 核心业务流程
 
@@ -331,14 +327,21 @@ rdp/                              # Monorepo根目录
 
 ```bash
 # 查看所有服务状态
-systemctl status postgresql redis-server nginx rdp-api casdoor gitea mattermost minio meilisearch
+systemctl status postgresql redis nginx rdp-api casdoor gitea mattermost meilisearch
 
 # 查看日志
 journalctl -u rdp-api -f                    # 实时查看API日志
 journalctl -u casdoor --since "1 hour ago"  # 查看最近1小时日志
 
+# 重启服务
+sudo systemctl restart rdp-api
+
+# 查看服务详情
+sudo systemctl cat rdp-api
+
 # 健康检查
-/opt/rdp/scripts/health-check.sh
+curl http://localhost:8080/api/v1/health
+curl http://localhost:8000/api/health
 
 # 备份
 /opt/rdp/scripts/backup.sh
@@ -346,26 +349,52 @@ journalctl -u casdoor --since "1 hour ago"  # 查看最近1小时日志
 
 ---
 
-## 8. 开发路线图
+## 8. AI Agent开发路线图（V1.2）
 
-### 8.1 四期规划
+> **⚠️ 重要声明：本项目采用AI Agent集群自主开发模式**
+> 
+> 本项目区别于传统软件开发，采用**AI Agent自主开发**方式：
+> - 各功能模块由专门的AI Agent负责（如PortalAgent、UserAgent等）
+> - PM-Agent（项目经理Agent）负责全局质量把控和进度协调
+> - 分期仅表示开发先后顺序，不设定具体时间限制
+> - 只有通过PM-Agent质量审查的代码才能进入下一阶段
 
-| 阶段 | 周期 | 交付内容 | 里程碑 |
-|------|------|----------|--------|
-| **一期：基础骨架** | 3个月 | 门户框架、用户管理、RBAC权限、项目管理基础CRUD、Mattermost集成、数据库设计 | 可登录使用 |
-| **二期：核心业务** | 4个月 | 流程引擎、项目开发模块、甘特图组件、产品/技术货架、Gitea集成、桌面辅助程序 | 研发流程上线 |
-| **三期：知识智能** | 3个月 | 知识库模块、Obsidian集成、Zotero集成、全文搜索、技术论坛、标签智能关联 | 知识管理上线 |
-| **四期：优化完善** | 2个月 | 数据分析仪表盘、MS Project导入导出、辅助程序完善、性能优化、安全加固 | 全功能GA |
+### 8.1 四期规划（AI Agent模式）
 
-### 8.2 团队分工建议
+| 阶段 | 执行顺序 | 负责AI Agent | 交付内容 | 里程碑 |
+|------|----------|-------------|----------|--------|
+| **一期：基础骨架** | 第1批 | PortalAgent、UserAgent、ProjectAgent、InfraAgent | 门户框架、用户管理、RBAC权限、项目管理基础CRUD、内置通知、数据库设计、systemd部署 | 可登录使用的基础平台 |
+| **二期：核心业务** | 第2批 | WorkflowAgent、DevAgent、ShelfAgent、DesktopAgent | 流程引擎(状态机)、项目开发模块、甘特图、产品/技术货架、Gitea集成、本地软件联动 | 研发流程上线 |
+| **三期：知识智能** | 第3批 | KnowledgeAgent、SearchAgent、ForumAgent | 知识库模块、Obsidian/Zotero集成、全文搜索(MeiliSearch)、技术论坛、Mattermost集成(可选) | 知识管理上线 |
+| **四期：优化完善** | 第4批 | AnalyticsAgent、各功能Agent | 数据分析仪表盘、流程优化、性能优化、用户体验提升 | 全功能稳定版本 |
 
-| 团队 | 人数 | 负责模块 | 技术栈 |
-|------|------|----------|--------|
-| 前端团队A | 2-3人 | 门户Shell + 用户管理 + 项目管理前端 | React + TypeScript + Ant Design |
-| 前端团队B | 2-3人 | 项目开发 + 货架模块 + 知识库前端 | React + TypeScript + ECharts |
-| 后端团队 | 3-4人 | API服务 + 流程引擎 + 数据库 | Go + PostgreSQL + Redis |
-| 集成/DevOps | 1-2人 | 开源组件集成 + 部署 | Nginx + Shell + systemd |
-| 桌面端 | 1人 | 辅助程序开发 | Electron/Tauri |
+### 8.2 AI Agent团队配置
+
+| AI Agent角色 | 负责模块 | 技术栈 | 核心职责 |
+|--------------|----------|--------|----------|
+| **PortalAgent** | 门户界面 | React + TS + Ant Design | 前端应用开发 |
+| **UserAgent** | 用户管理 | Go + Casdoor/Casbin | 认证授权服务 |
+| **ProjectAgent** | 项目管理 | Go + Gitea API | 项目服务、Git集成 |
+| **WorkflowAgent** | 流程引擎 | Go + 状态机 | 流程定义、活动流转 |
+| **DevAgent** | 项目开发 | Go + rdp协议 | 开发模块、本地软件联动 |
+| **ShelfAgent** | 产品/技术货架 | Go + PostgreSQL | 货架服务、选用管理 |
+| **KnowledgeAgent** | 知识库 | Go + 文件同步 | 知识服务、Obsidian集成 |
+| **SearchAgent** | 搜索服务 | Go + MeiliSearch | 全文搜索、索引管理 |
+| **ForumAgent** | 技术论坛 | Go + React | 论坛服务、帖子管理 |
+| **InfraAgent** | 基础设施 | Shell + systemd | 部署脚本、配置管理 |
+| **DesktopAgent** | 桌面辅助程序 | Electron/Tauri | rdp协议、Git自动提交 |
+| **AnalyticsAgent** | 数据分析 | Go + ECharts | 仪表盘、报表服务 |
+| **PM-Agent** | **项目经理** | **全栈审查** | **代码审查、架构一致性、进度协调、质量把关** |
+
+### 8.3 PM-Agent（项目经理Agent）核心职责
+
+PM-Agent作为项目质量把控核心，负责：
+1. **代码质量审查**：审查各Agent代码是否符合编码规范
+2. **架构一致性检查**：确保接口设计一致、数据模型统一
+3. **进度协调**：根据依赖关系决定开发顺序
+4. **冲突解决**：决策不同Agent的实现方案选择
+5. **集成测试**：组织阶段集成测试，确保模块协作正常
+6. **质量门禁**：只有通过审查的代码才能进入下一阶段
 
 ---
 
@@ -382,6 +411,10 @@ journalctl -u casdoor --since "1 hour ago"  # 查看最近1小时日志
 | **TRL** | 技术成熟度等级（Technology Readiness Level）1-9级 |
 | **交付物** | 项目活动中产生的文档、图纸、代码等成果 |
 | **活动** | 流程中的最小执行单元 |
+| **AI Agent** | 人工智能代理，本项目中负责特定模块开发的智能程序 |
+| **PM-Agent** | 项目经理Agent，负责全局质量把控和进度协调的AI Agent |
+| **功能Agent** | 负责具体功能模块开发的AI Agent（如PortalAgent、UserAgent等） |
+| **AI Agent开发模式** | 本项目采用的开发方式，各模块由专门AI Agent负责，PM-Agent统一协调 |
 
 ---
 
@@ -403,10 +436,11 @@ journalctl -u casdoor --since "1 hour ago"  # 查看最近1小时日志
 
 | 文档 | 路径 | 说明 |
 |------|------|------|
-| 详细实施方案 | `方案3/01-implementation-plan.md` | 架构设计、技术选型、数据库设计 |
-| 需求规格说明书 | `方案3/02-requirements-specification.md` | 功能规格、API规范、验收标准 |
-| 部署方案修正 | `方案3/03-deployment-correction.md` | systemd裸机部署完整指南 |
-| HTML文档主页 | `方案3/index.html` | 浏览器查看入口 |
+| 需求文档 | `方案/01_需求文档.md` | 需求分析、功能清单、验收标准 |
+| 详细实施方案 | `方案/02_详细实施方案.md` | 架构设计、技术选型、实施计划 |
+| 需求规格说明书 | `方案/03_需求规格说明书.md` | 功能规格、接口定义、质量要求 |
+| 技术架构分析 | `方案/技术架构分析报告.md` | 技术分析、架构设计 |
+| HTML/PDF版本 | `方案/pdf-html/` | 文档的HTML和PDF导出版本 |
 
 ---
 

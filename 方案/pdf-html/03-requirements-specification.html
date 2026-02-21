@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微波研发部门研发管理平台 — 需求规格说明书</title>
+<style>
+  :root { --primary: #1a56db; --secondary: #374151; --accent: #059669; --bg: #ffffff; --surface: #f9fafb; --border: #e5e7eb; --text: #111827; --text-muted: #6b7280; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @media print { body { font-size: 10.5pt; } .no-print { display: none; } .page-break { page-break-before: always; } }
+  body { font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; line-height: 1.8; color: var(--text); max-width: 1100px; margin: 0 auto; padding: 40px 60px; background: var(--bg); }
+  h1 { font-size: 2.2em; color: var(--primary); border-bottom: 3px solid var(--primary); padding-bottom: 15px; margin: 40px 0 20px; }
+  h2 { font-size: 1.6em; color: var(--primary); margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+  h3 { font-size: 1.3em; color: var(--secondary); margin: 25px 0 12px; }
+  h4 { font-size: 1.1em; color: var(--accent); margin: 20px 0 10px; }
+  h5 { font-size: 1em; color: var(--secondary); margin: 15px 0 8px; }
+  p { margin: 10px 0; text-align: justify; }
+  ul, ol { margin: 10px 0 10px 25px; }
+  li { margin: 5px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.92em; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--primary); color: white; font-weight: 600; }
+  tr:nth-child(even) { background: var(--surface); }
+  .cover { text-align: center; padding: 80px 0; margin-bottom: 40px; border-bottom: 3px double var(--primary); }
+  .cover h1 { border: none; font-size: 2.8em; margin-bottom: 10px; }
+  .cover .subtitle { font-size: 1.4em; color: var(--text-muted); margin-bottom: 30px; }
+  .cover .meta { font-size: 1em; color: var(--text-muted); line-height: 2; }
+  .callout { padding: 16px 20px; border-left: 4px solid var(--primary); background: #eff6ff; border-radius: 0 8px 8px 0; margin: 15px 0; }
+  .callout-agent { border-left-color: #dc2626; background: #fef2f2; }
+  .callout-warn { border-left-color: #f59e0b; background: #fffbeb; }
+  .callout-success { border-left-color: var(--accent); background: #f0fdf4; }
+  .toc { background: var(--surface); padding: 25px 30px; border-radius: 10px; margin: 20px 0 40px; border: 1px solid var(--border); }
+  .toc h3 { margin-top: 0; color: var(--primary); }
+  .toc ul { list-style: none; margin-left: 0; }
+  .toc ul ul { margin-left: 20px; }
+  .toc li { margin: 6px 0; }
+  .toc a { color: var(--primary); text-decoration: none; }
+  code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; color: #be123c; }
+  pre { background: #1e293b; color: #e2e8f0; padding: 16px; border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 0.88em; line-height: 1.5; }
+  pre code { background: none; color: inherit; padding: 0; }
+  .req-box { border: 2px solid var(--border); border-radius: 10px; margin: 20px 0; overflow: hidden; }
+  .req-box-header { background: var(--primary); color: white; padding: 10px 16px; font-weight: 700; font-size: 1.05em; }
+  .req-box-body { padding: 16px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.82em; font-weight: 500; margin: 2px; }
+  .badge-p0 { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+  .badge-p1 { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+  .badge-p2 { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+  .badge-phase1 { background: #dc2626; color: white; }
+  .badge-phase2 { background: #d97706; color: white; }
+  .badge-phase3 { background: #059669; color: white; }
+  .badge-phase4 { background: #2563eb; color: white; }
+  .api-spec { background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin: 10px 0; font-size: 0.9em; }
+  .api-method { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 700; color: white; margin-right: 8px; }
+  .get { background: #059669; }
+  .post { background: #2563eb; }
+  .put { background: #d97706; }
+  .delete { background: #dc2626; }
+  .diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 20px 0; text-align: center; overflow-x: auto; }
+  .entity { font-family: 'Courier New', monospace; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>微波研发部门研发管理平台</h1>
+  <div class="subtitle">需求规格说明书（SRS）</div>
+  <div class="meta">
+    文档编号: RDP-SRS-2026-001<br>
+    版本: V1.0<br>
+    编制日期: 2026年2月20日<br>
+    密级: 内部公开<br>
+    <strong>目标读者: AI Agent 实现集群</strong>
+  </div>
+</div>
+
+<div class="callout-agent callout">
+  <strong>⚠ Agent 实现指引：</strong>本文档是面向 AI Agent 集群的需求规格说明书。每个功能规格包含明确的<strong>输入/输出/验收标准/数据模型/API规范</strong>，Agent应严格按照规格实现，不得遗漏。对于标注为<code>[MUST]</code>的条目为强制实现，<code>[SHOULD]</code>为推荐实现，<code>[MAY]</code>为可选实现。
+</div>
+
+<div class="toc">
+  <h3>目 录</h3>
+  <ul>
+    <li><a href="#c1">1. 引言</a></li>
+    <li><a href="#c2">2. 系统约束与技术规范</a></li>
+    <li><a href="#c3">3. 数据模型规范</a></li>
+    <li><a href="#c4">4. 功能规格：SRS-PORTAL — 门户界面</a></li>
+    <li><a href="#c5">5. 功能规格：SRS-USER — 用户管理</a></li>
+    <li><a href="#c6">6. 功能规格：SRS-PM — 项目管理</a></li>
+    <li><a href="#c7">7. 功能规格：SRS-DEV — 项目开发</a></li>
+    <li><a href="#c8">8. 功能规格：SRS-SHELF — 产品货架</a></li>
+    <li><a href="#c9">9. 功能规格：SRS-TECH — 技术货架</a></li>
+    <li><a href="#c10">10. 功能规格：SRS-KB — 知识库</a></li>
+    <li><a href="#c11">11. 功能规格：SRS-FORUM — 技术论坛</a></li>
+    <li><a href="#c12">12. 功能规格：SRS-IM — 即时通信</a></li>
+    <li><a href="#c13">13. 非功能规格</a></li>
+    <li><a href="#c14">14. API 设计规范</a></li>
+    <li><a href="#c15">15. 验收测试矩阵</a></li>
+  </ul>
+</div>
+
+<h1 id="c1"><span style="color:var(--primary)">1.</span> 引言</h1>
+
+<h3>1.1 系统标识</h3>
+<table>
+  <tr><th>项目</th><th>内容</th></tr>
+  <tr><td>系统名称</td><td>微波研发部门研发管理平台（R&D Platform, 简称RDP）</td></tr>
+  <tr><td>系统代号</td><td>RDP</td></tr>
+  <tr><td>版本目标</td><td>V1.0（覆盖一至四期全部功能）</td></tr>
+  <tr><td>部署环境</td><td>离线局域网，Docker Compose单节点</td></tr>
+  <tr><td>用户规模</td><td>30-100人</td></tr>
+</table>
+
+<h3>1.2 Agent 实现约定</h3>
+<div class="callout-agent callout">
+<strong>实现顺序约定：</strong>
+<ol>
+  <li><span class="badge badge-phase1">Phase 1</span> 标记的功能必须在第一批次实现（门户+用户+项目管理基础+IM集成）</li>
+  <li><span class="badge badge-phase2">Phase 2</span> 标记的功能在第二批次实现（流程引擎+项目开发+货架）</li>
+  <li><span class="badge badge-phase3">Phase 3</span> 标记的功能在第三批次实现（知识库+论坛+搜索）</li>
+  <li><span class="badge badge-phase4">Phase 4</span> 标记的功能在第四批次实现（优化+高级特性）</li>
+</ol>
+<strong>每个功能规格包含：</strong>功能ID | 描述 | 输入 | 输出 | 前置条件 | 数据模型 | API端点 | 验收标准 | 阶段标记
+</div>
+
+<h1 id="c2" class="page-break"><span style="color:var(--primary)">2.</span> 系统约束与技术规范</h1>
+
+<h3>2.1 技术栈约束（强制）</h3>
+<table>
+  <tr><th>层次</th><th>技术</th><th>版本约束</th><th>备注</th></tr>
+  <tr><td>前端</td><td>React + TypeScript + Vite</td><td>React 18.x, TS 5.x, Vite 5.x</td><td>[MUST] 不可替换</td></tr>
+  <tr><td>UI库</td><td>Ant Design 5</td><td>5.x</td><td>[MUST] 主UI库</td></tr>
+  <tr><td>后端</td><td>Go (Gin framework)</td><td>Go 1.22+, Gin 1.9+</td><td>[MUST] 核心API</td></tr>
+  <tr><td>数据库</td><td>PostgreSQL</td><td>16.x</td><td>[MUST]</td></tr>
+  <tr><td>缓存</td><td>Redis</td><td>7.x</td><td>[MUST]</td></tr>
+  <tr><td>搜索</td><td>MeiliSearch</td><td>1.x</td><td>[MUST] Phase 3</td></tr>
+  <tr><td>Git服务</td><td>Gitea (独立部署,API集成)</td><td>1.22+</td><td>[MUST] Phase 2</td></tr>
+  <tr><td>认证</td><td>Casdoor (独立部署)</td><td>Latest</td><td>[MUST] Phase 1</td></tr>
+  <tr><td>IM</td><td>Mattermost (独立部署)</td><td>Latest Team Edition</td><td>[MUST] Phase 1</td></tr>
+  <tr><td>对象存储</td><td>MinIO</td><td>Latest</td><td>[MUST]</td></tr>
+  <tr><td>容器化</td><td>Docker + Docker Compose</td><td>24.x</td><td>[MUST]</td></tr>
+</table>
+
+<h3>2.2 编码规范约束</h3>
+<table>
+  <tr><th>规范项</th><th>要求</th></tr>
+  <tr><td>语言</td><td>[MUST] 代码注释和变量名使用英文；UI文案使用中文（i18n机制）</td></tr>
+  <tr><td>API风格</td><td>[MUST] RESTful API；路径小写+连字符；版本前缀 <code>/api/v1/</code></td></tr>
+  <tr><td>错误处理</td><td>[MUST] 统一错误响应格式 <code>{"code": int, "message": string, "data": null}</code></td></tr>
+  <tr><td>认证方式</td><td>[MUST] JWT Bearer Token；Access Token有效期2小时；Refresh Token 7天</td></tr>
+  <tr><td>分页</td><td>[MUST] 统一分页参数 <code>?page=1&page_size=20</code>；响应含 <code>total, page, page_size</code></td></tr>
+  <tr><td>时间格式</td><td>[MUST] ISO 8601（UTC）：<code>2026-02-20T13:00:00Z</code></td></tr>
+  <tr><td>ID生成</td><td>[MUST] 雪花算法或ULID，不使用自增ID</td></tr>
+  <tr><td>前端状态</td><td>[SHOULD] Zustand 或 React Context；避免Redux</td></tr>
+  <tr><td>CSS方案</td><td>[SHOULD] Tailwind CSS + Ant Design 主题定制</td></tr>
+  <tr><td>测试覆盖</td><td>[SHOULD] 后端核心逻辑单元测试覆盖率 ≥ 60%</td></tr>
+</table>
+
+<h3>2.3 项目结构约束</h3>
+<pre><code>rdp/                          # Monorepo根目录
+├── apps/
+│   ├── web/                  # 主前端应用(Shell)
+│   ├── desktop/              # 桌面辅助程序(Electron/Tauri)
+│   └── modules/
+│       ├── user/             # 用户管理子模块前端
+│       ├── project/          # 项目管理子模块前端
+│       ├── dev/              # 项目开发子模块前端
+│       ├── shelf/            # 产品货架子模块前端
+│       ├── tech-shelf/       # 技术货架子模块前端
+│       ├── knowledge/        # 知识库子模块前端
+│       └── forum/            # 论坛子模块前端
+├── services/
+│   ├── api-gateway/          # API网关配置(Nginx)
+│   ├── core/                 # 核心业务服务(Go)
+│   ├── workflow/             # 流程引擎服务(Go)
+│   ├── file-service/         # 文件管理服务(Go)
+│   ├── search-service/       # 搜索索引服务(Go)
+│   └── notification/         # 通知服务(Go)
+├── packages/
+│   ├── shared-types/         # 共享TypeScript类型定义
+│   ├── shared-utils/         # 共享工具函数
+│   └── ui-components/        # 共享UI组件
+├── database/
+│   ├── migrations/           # 数据库迁移脚本
+│   └── seeds/                # 初始数据种子
+├── deploy/
+│   ├── docker-compose.yml    # Docker编排
+│   ├── nginx/                # Nginx配置
+│   └── scripts/              # 部署脚本
+└── docs/                     # 项目文档</code></pre>
+
+<h1 id="c3" class="page-break"><span style="color:var(--primary)">3.</span> 数据模型规范</h1>
+
+<h3>3.1 核心实体关系图（ER图）</h3>
+<div class="diagram">
+<svg width="900" height="500" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
+  <text x="450" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#1a56db">核心实体关系图</text>
+
+  <rect x="30" y="40" width="180" height="130" rx="6" fill="white" stroke="#1a56db" stroke-width="2"/>
+  <rect x="30" y="40" width="180" height="28" rx="6" fill="#1a56db"/><text x="120" y="59" text-anchor="middle" fill="white" font-size="12" font-weight="bold">User 用户</text>
+  <text x="40" y="85" font-size="10" fill="#374151" class="entity">id: ULID [PK]</text>
+  <text x="40" y="100" font-size="10" fill="#374151" class="entity">username: VARCHAR(50)</text>
+  <text x="40" y="115" font-size="10" fill="#374151" class="entity">role: ENUM</text>
+  <text x="40" y="130" font-size="10" fill="#374151" class="entity">team: ENUM</text>
+  <text x="40" y="145" font-size="10" fill="#374151" class="entity">title: ENUM (职称)</text>
+  <text x="40" y="160" font-size="10" fill="#374151" class="entity">skills: JSONB</text>
+
+  <rect x="360" y="40" width="180" height="150" rx="6" fill="white" stroke="#d97706" stroke-width="2"/>
+  <rect x="360" y="40" width="180" height="28" rx="6" fill="#d97706"/><text x="450" y="59" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Project 项目</text>
+  <text x="370" y="85" font-size="10" fill="#374151" class="entity">id: ULID [PK]</text>
+  <text x="370" y="100" font-size="10" fill="#374151" class="entity">name: VARCHAR(200)</text>
+  <text x="370" y="115" font-size="10" fill="#374151" class="entity">category: ENUM</text>
+  <text x="370" y="130" font-size="10" fill="#374151" class="entity">status: ENUM</text>
+  <text x="370" y="145" font-size="10" fill="#374151" class="entity">process_template_id: FK</text>
+  <text x="370" y="160" font-size="10" fill="#374151" class="entity">git_repo_id: VARCHAR</text>
+  <text x="370" y="175" font-size="10" fill="#374151" class="entity">leader_id: FK → User</text>
+
+  <rect x="690" y="40" width="180" height="130" rx="6" fill="white" stroke="#059669" stroke-width="2"/>
+  <rect x="690" y="40" width="180" height="28" rx="6" fill="#059669"/><text x="780" y="59" text-anchor="middle" fill="white" font-size="12" font-weight="bold">ProcessTemplate 流程</text>
+  <text x="700" y="85" font-size="10" fill="#374151" class="entity">id: ULID [PK]</text>
+  <text x="700" y="100" font-size="10" fill="#374151" class="entity">name: VARCHAR(100)</text>
+  <text x="700" y="115" font-size="10" fill="#374151" class="entity">category: ENUM</text>
+  <text x="700" y="130" font-size="10" fill="#374151" class="entity">bpmn_xml: TEXT</text>
+  <text x="700" y="145" font-size="10" fill="#374151" class="entity">activities: JSONB</text>
+  <text x="700" y="160" font-size="10" fill="#374151" class="entity">version: INT</text>
+
+  <rect x="30" y="220" width="180" height="130" rx="6" fill="white" stroke="#7c3aed" stroke-width="2"/>
+  <rect x="30" y="220" width="180" height="28" rx="6" fill="#7c3aed"/><text x="120" y="239" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Activity 活动</text>
+  <text x="40" y="265" font-size="10" fill="#374151" class="entity">id: ULID [PK]</text>
+  <text x="40" y="280" font-size="10" fill="#374151" class="entity">project_id: FK → Project</text>
+  <text x="40" y="295" font-size="10" fill="#374151" class="entity">name: VARCHAR(200)</text>
+  <text x="40" y="310" font-size="10" fill="#374151" class="entity">status: ENUM</text>
+  <text x="40" y="325" font-size="10" fill="#374151" class="entity">assignee_id: FK → User</text>
+  <text x="40" y="340" font-size="10" fill="#374151" class="entity">inputs/outputs: JSONB</text>
+
+  <rect x="360" y="240" width="180" height="115" rx="6" fill="white" stroke="#dc2626" stroke-width="2"/>
+  <rect x="360" y="240" width="180" height="28" rx="6" fill="#dc2626"/><text x="450" y="259" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Product 产品(货架)</text>
+  <text x="370" y="285" font-size="10" fill="#374151" class="entity">id: ULID [PK]</text>
+  <text x="370" y="300" font-size="10" fill="#374151" class="entity">name: VARCHAR(200)</text>
+  <text x="370" y="315" font-size="10" fill="#374151" class="entity">type: ENUM</text>
+  <text x="370" y="330" font-size="10" fill="#374151" class="entity">maturity: ENUM</text>
+  <text x="370" y="345" font-size="10" fill="#374151" class="entity">owner_id: FK → User</text>
+
+  <rect x="690" y="240" width="180" height="115" rx="6" fill="white" stroke="#0891b2" stroke-width="2"/>
+  <rect x="690" y="240" width="180" height="28" rx="6" fill="#0891b2"/><text x="780" y="259" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Knowledge 知识</text>
+  <text x="700" y="285" font-size="10" fill="#374151" class="entity">id: ULID [PK]</text>
+  <text x="700" y="300" font-size="10" fill="#374151" class="entity">title: VARCHAR(300)</text>
+  <text x="700" y="315" font-size="10" fill="#374151" class="entity">category: ENUM</text>
+  <text x="700" y="330" font-size="10" fill="#374151" class="entity">tags: TEXT[]</text>
+  <text x="700" y="345" font-size="10" fill="#374151" class="entity">file_path: VARCHAR</text>
+
+  <rect x="200" y="400" width="180" height="90" rx="6" fill="white" stroke="#ea580c" stroke-width="2"/>
+  <rect x="200" y="400" width="180" height="28" rx="6" fill="#ea580c"/><text x="290" y="419" text-anchor="middle" fill="white" font-size="12" font-weight="bold">File 文件</text>
+  <text x="210" y="445" font-size="10" fill="#374151" class="entity">id: ULID [PK]</text>
+  <text x="210" y="460" font-size="10" fill="#374151" class="entity">name / path / size</text>
+  <text x="210" y="475" font-size="10" fill="#374151" class="entity">git_commit_hash: VARCHAR</text>
+
+  <rect x="520" y="400" width="180" height="90" rx="6" fill="white" stroke="#059669" stroke-width="2"/>
+  <rect x="520" y="400" width="180" height="28" rx="6" fill="#059669"/><text x="610" y="419" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Technology 技术</text>
+  <text x="530" y="445" font-size="10" fill="#374151" class="entity">id: ULID [PK]</text>
+  <text x="530" y="460" font-size="10" fill="#374151" class="entity">name / domain / trl</text>
+  <text x="530" y="475" font-size="10" fill="#374151" class="entity">owner_id: FK → User</text>
+
+  <line x1="210" y1="105" x2="360" y2="105" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="285" y="100" text-anchor="middle" font-size="9" fill="#6b7280">N:M</text>
+  <line x1="540" y1="80" x2="690" y2="80" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="615" y="75" text-anchor="middle" font-size="9" fill="#6b7280">1:N</text>
+  <line x1="120" y1="170" x2="120" y2="220" stroke="#6b7280" stroke-width="1.5"/>
+  <text x="130" y="198" font-size="9" fill="#6b7280">1:N</text>
+  <line x1="450" y1="190" x2="450" y2="240" stroke="#6b7280" stroke-width="1.5"/>
+  <text x="460" y="218" font-size="9" fill="#6b7280">触发上架</text>
+</svg>
+</div>
+
+<h3>3.2 枚举类型定义</h3>
+<pre><code>-- 用户角色
+CREATE TYPE user_role AS ENUM ('admin', 'dept_leader', 'team_leader', 'designer', 'other');
+
+-- 团队
+CREATE TYPE team_type AS ENUM ('product_mgmt', 'product_dev', 'tech_dev', 'general_mgmt');
+
+-- 产品管理子方向
+CREATE TYPE pm_specialty AS ENUM ('model_mgmt', 'reliability');
+
+-- 产品开发产品线
+CREATE TYPE pd_product_line AS ENUM ('line_a', 'line_b', 'line_c');
+
+-- 技术开发方向
+CREATE TYPE td_specialty AS ENUM ('antenna', 'rf', 'digital', 'power');
+
+-- 设计师职称
+CREATE TYPE title_level AS ENUM ('designer_junior', 'assistant_eng', 'engineer', 'senior_eng', 'researcher');
+
+-- 项目类别
+CREATE TYPE project_category AS ENUM (
+  'standalone',      -- 单机
+  'module',          -- 模块
+  'software',        -- 软件
+  'tech_dev',        -- 技术开发
+  'process_dev',     -- 流程开发
+  'knowledge_dev',   -- 知识库开发
+  'product_launch'   -- 产品上架
+);
+
+-- 项目状态
+CREATE TYPE project_status AS ENUM ('draft', 'planning', 'in_progress', 'review', 'completed', 'archived');
+
+-- 活动状态
+CREATE TYPE activity_status AS ENUM ('pending', 'in_progress', 'review', 'completed', 'blocked');
+
+-- 产品成熟度
+CREATE TYPE product_maturity AS ENUM ('developing', 'prototype', 'engineering', 'qualification', 'production');
+
+-- 产品类型(货架)
+CREATE TYPE shelf_type AS ENUM ('standalone', 'module', 'software', 'basic');
+
+-- 基础件子类
+CREATE TYPE basic_subtype AS ENUM ('component', 'fastener', 'material');
+
+-- 知识分类
+CREATE TYPE knowledge_category AS ENUM (
+  'theory', 'standard', 'regulation', 'process', 'case_positive', 'case_negative', 'simulation', 'guide'
+);
+
+-- TRL等级
+CREATE TYPE trl_level AS ENUM ('TRL1','TRL2','TRL3','TRL4','TRL5','TRL6','TRL7','TRL8','TRL9');</code></pre>
+
+<h1 id="c4" class="page-break"><span style="color:var(--primary)">4.</span> SRS-PORTAL — 门户界面模块</h1>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-PORTAL-001: 部门门户首页 <span class="badge badge-phase1">Phase 1</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 系统默认首页，未登录用户可见。展示部门简介、新闻公告列表、荣誉展示区、快捷导航入口。</p>
+    <h5>输入</h5>
+    <p>无需认证的公开数据请求</p>
+    <h5>输出</h5>
+    <ul>
+      <li>部门简介区（可配置的富文本内容）</li>
+      <li>最新公告列表（最近10条，含标题、日期、摘要）</li>
+      <li>荣誉展示轮播（图片+文字）</li>
+      <li>导航卡片入口（各功能模块图标+名称）</li>
+    </ul>
+    <h5>API端点</h5>
+    <div class="api-spec">
+      <span class="api-method get">GET</span><code>/api/v1/portal/announcements?page=1&page_size=10</code><br>
+      <span class="api-method get">GET</span><code>/api/v1/portal/honors</code><br>
+      <span class="api-method get">GET</span><code>/api/v1/portal/config</code> (部门简介等配置信息)
+    </div>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 页面在3秒内完成首屏渲染（局域网环境）</li>
+      <li>✅ 公告列表支持分页加载</li>
+      <li>✅ 管理员可通过后台编辑门户内容</li>
+      <li>✅ 响应式适配1920×1080和1366×768分辨率</li>
+    </ul>
+  </div>
+</div>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-PORTAL-002: 个人工作台 <span class="badge badge-phase1">Phase 1</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 用户登录后的默认页面。聚合展示个人相关的待办事项、我的项目列表、消息通知、快捷操作。</p>
+    <h5>组成部分</h5>
+    <table>
+      <tr><th>区域</th><th>内容</th><th>数据来源</th></tr>
+      <tr><td>待办事项</td><td>待审批项、待完成活动、超期提醒</td><td>项目管理+项目开发模块</td></tr>
+      <tr><td>我的项目</td><td>当前参与项目列表，含进度百分比</td><td>项目管理模块</td></tr>
+      <tr><td>消息通知</td><td>未读消息数、最近5条通知</td><td>通知服务</td></tr>
+      <tr><td>快捷操作</td><td>新建项目、查看货架、进入知识库</td><td>固定配置+权限过滤</td></tr>
+      <tr><td>统计概览</td><td>本月完成任务数、贡献度排名</td><td>聚合统计</td></tr>
+    </table>
+    <h5>API端点</h5>
+    <div class="api-spec">
+      <span class="api-method get">GET</span><code>/api/v1/workbench/todos</code> → 待办列表<br>
+      <span class="api-method get">GET</span><code>/api/v1/workbench/my-projects</code> → 我的项目<br>
+      <span class="api-method get">GET</span><code>/api/v1/workbench/notifications?unread=true</code> → 通知<br>
+      <span class="api-method get">GET</span><code>/api/v1/workbench/stats</code> → 个人统计
+    </div>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 登录后自动跳转到工作台</li>
+      <li>✅ 待办事项按紧急程度排序（超期>今日到期>即将到期）</li>
+      <li>✅ 点击待办可直接跳转到对应活动/审批页面</li>
+      <li>✅ 未读消息实时更新（WebSocket推送）</li>
+    </ul>
+  </div>
+</div>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-PORTAL-003: 全局搜索 <span class="badge badge-phase3">Phase 3</span> <span class="badge badge-p1">P1</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[SHOULD] 顶部搜索栏，支持跨模块全文搜索。搜索范围：项目、知识库文档、产品、技术、用户、论坛帖子。</p>
+    <h5>技术实现</h5>
+    <p>[MUST] 基于MeiliSearch实现。各模块数据变更时通过事件驱动更新搜索索引。前端使用防抖（300ms）实时搜索建议。</p>
+    <h5>API端点</h5>
+    <div class="api-spec">
+      <span class="api-method get">GET</span><code>/api/v1/search?q=关键词&scope=all|project|knowledge|product&page=1</code>
+    </div>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 搜索响应时间 ≤ 500ms（10万条数据级别）</li>
+      <li>✅ 支持中文分词和拼音搜索</li>
+      <li>✅ 搜索结果按相关度排序，关键词高亮</li>
+      <li>✅ 支持按模块过滤搜索范围</li>
+    </ul>
+  </div>
+</div>
+
+<h1 id="c5" class="page-break"><span style="color:var(--primary)">5.</span> SRS-USER — 用户管理模块</h1>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-USER-001: 用户CRUD与认证 <span class="badge badge-phase1">Phase 1</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 通过Casdoor实现用户注册、登录、Token管理。支持管理员批量导入（Excel）、单个创建、编辑、停用。首次登录强制修改密码。</p>
+    <h5>数据模型</h5>
+    <pre><code>TABLE users (
+  id          ULID PRIMARY KEY,
+  username    VARCHAR(50) UNIQUE NOT NULL,
+  display_name VARCHAR(100) NOT NULL,
+  email       VARCHAR(100),
+  phone       VARCHAR(20),
+  avatar_url  VARCHAR(500),
+  role        user_role NOT NULL DEFAULT 'designer',
+  team        team_type,
+  specialty   VARCHAR(50),      -- 细分方向
+  product_line pd_product_line, -- 产品开发适用
+  title       title_level,
+  skills      JSONB DEFAULT '[]',  -- ["微带天线","GaN功放"]
+  honors      JSONB DEFAULT '[]',
+  bio         TEXT,
+  is_active   BOOLEAN DEFAULT true,
+  casdoor_id  VARCHAR(100),     -- Casdoor对应ID
+  created_at  TIMESTAMPTZ DEFAULT NOW(),
+  updated_at  TIMESTAMPTZ DEFAULT NOW()
+);</code></pre>
+    <h5>API端点</h5>
+    <div class="api-spec">
+      <span class="api-method post">POST</span><code>/api/v1/auth/login</code> → {username, password} → {access_token, refresh_token}<br>
+      <span class="api-method post">POST</span><code>/api/v1/auth/refresh</code> → {refresh_token} → {access_token}<br>
+      <span class="api-method get">GET</span><code>/api/v1/users</code> → 用户列表（支持?team=&role=&title=筛选）<br>
+      <span class="api-method get">GET</span><code>/api/v1/users/:id</code> → 用户详情<br>
+      <span class="api-method post">POST</span><code>/api/v1/users</code> → 创建用户 [Admin]<br>
+      <span class="api-method put">PUT</span><code>/api/v1/users/:id</code> → 更新用户 [Admin]<br>
+      <span class="api-method post">POST</span><code>/api/v1/users/import</code> → Excel批量导入 [Admin]<br>
+      <span class="api-method put">PUT</span><code>/api/v1/users/:id/role</code> → 修改角色 [Admin]
+    </div>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 管理员可创建/编辑/停用用户</li>
+      <li>✅ Excel模板导入≥50个用户无报错</li>
+      <li>✅ 首次登录强制改密后方可进入系统</li>
+      <li>✅ 5次登录失败锁定30分钟</li>
+      <li>✅ JWT Token过期自动刷新，无感知</li>
+    </ul>
+  </div>
+</div>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-USER-002: RBAC权限模型 <span class="badge badge-phase1">Phase 1</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 基于Casbin实现5级角色权限控制。权限继承链：admin > dept_leader > team_leader > designer > other。</p>
+    <h5>权限矩阵（核心）</h5>
+    <table>
+      <tr><th>资源</th><th>admin</th><th>dept_leader</th><th>team_leader</th><th>designer</th><th>other</th></tr>
+      <tr><td>用户管理</td><td>CRUD</td><td>R+部分U</td><td>R(本团队)</td><td>R(自己)</td><td>R(自己)</td></tr>
+      <tr><td>项目创建</td><td>✅</td><td>✅</td><td>✅</td><td>申请</td><td>❌</td></tr>
+      <tr><td>项目查看</td><td>全部</td><td>全部</td><td>本团队+参与</td><td>参与项目</td><td>公开项目</td></tr>
+      <tr><td>审批</td><td>✅</td><td>✅</td><td>本团队</td><td>❌</td><td>❌</td></tr>
+      <tr><td>货架管理</td><td>CRUD</td><td>CRUD</td><td>CRU</td><td>R+选用</td><td>R</td></tr>
+      <tr><td>知识库</td><td>CRUD</td><td>CRUD</td><td>CRUD</td><td>CR</td><td>R</td></tr>
+      <tr><td>系统配置</td><td>✅</td><td>部分</td><td>❌</td><td>❌</td><td>❌</td></tr>
+    </table>
+    <h5>Casbin模型定义</h5>
+    <pre><code>[request_definition]
+r = sub, obj, act
+
+[policy_definition]
+p = sub, obj, act
+
+[role_definition]
+g = _, _
+
+[policy_effect]
+e = some(where (p.eft == allow))
+
+[matchers]
+m = g(r.sub, p.sub) && keyMatch2(r.obj, p.obj) && r.act == p.act</code></pre>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 设计师无法访问用户管理页面（403）</li>
+      <li>✅ 团队组长只能看到本团队成员和项目</li>
+      <li>✅ 管理员可将部门领导设为管理员角色</li>
+      <li>✅ 角色变更后无需重新登录即生效</li>
+    </ul>
+  </div>
+</div>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-USER-003: 个人Profile页面 <span class="badge badge-phase1">Phase 1</span> <span class="badge badge-p1">P1</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[SHOULD] 类GitHub个人主页。展示：头像/姓名/职称/团队、技能标签、能力雷达图(ECharts)、贡献热力图(近12月)、项目履历、荣誉列表。</p>
+    <h5>API端点</h5>
+    <div class="api-spec">
+      <span class="api-method get">GET</span><code>/api/v1/users/:id/profile</code> → 完整Profile数据<br>
+      <span class="api-method get">GET</span><code>/api/v1/users/:id/contributions?year=2026</code> → 贡献热力图数据<br>
+      <span class="api-method get">GET</span><code>/api/v1/users/:id/projects</code> → 项目履历<br>
+      <span class="api-method put">PUT</span><code>/api/v1/users/:id/skills</code> → 更新技能标签
+    </div>
+    <h5>贡献热力图数据结构</h5>
+    <pre><code>// GET /api/v1/users/:id/contributions?year=2026
+{
+  "data": [
+    {"date": "2026-01-01", "count": 3, "details": ["完成活动x2", "提交文档x1"]},
+    {"date": "2026-01-02", "count": 0, "details": []},
+    ...
+  ]
+}</code></pre>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 雷达图展示≥5个维度的能力评估</li>
+      <li>✅ 热力图按日粒度展示全年365天数据</li>
+      <li>✅ 项目履历按时间倒序，显示角色和状态</li>
+      <li>✅ 设计师可编辑自己的技能标签和个人简介</li>
+    </ul>
+  </div>
+</div>
+
+<h1 id="c6" class="page-break"><span style="color:var(--primary)">6.</span> SRS-PM — 项目管理模块</h1>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-PM-001: 项目总览看板 <span class="badge badge-phase1">Phase 1</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 展示全部门项目的鸟瞰视图。支持按产品线/团队/时间范围/负责人/状态多维筛选和排序。提供列表视图和卡片视图切换。</p>
+    <h5>API端点</h5>
+    <div class="api-spec">
+      <span class="api-method get">GET</span><code>/api/v1/projects?category=&status=&team=&leader_id=&date_from=&date_to=&sort=created_at&order=desc&page=1&page_size=20</code>
+    </div>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 支持≥5个筛选条件组合过滤</li>
+      <li>✅ 项目卡片显示：名称、负责人、状态、进度百分比、到期日</li>
+      <li>✅ 超期项目自动标红</li>
+      <li>✅ 数据按权限过滤（设计师只看到参与项目）</li>
+    </ul>
+  </div>
+</div>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-PM-002: 五步项目创建向导 <span class="badge badge-phase1">Phase 1</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 引导式项目创建流程：Step1(基本信息) → Step2(类别选择) → Step3(流程绑定) → Step4(团队分配) → Step5(计划确认)。</p>
+    <h5>Step详情</h5>
+    <table>
+      <tr><th>Step</th><th>表单字段</th><th>约束</th></tr>
+      <tr><td>1-基本信息</td><td>项目名称*, 项目编号*(自动生成可修改), 描述, 计划开始日期*, 计划结束日期*</td><td>名称唯一；编号格式: RDP-{CATEGORY}-{YYYYMMDD}-{SEQ}</td></tr>
+      <tr><td>2-类别选择</td><td>项目类别*(单选7种), 产品线(产品开发类必选)</td><td>选择后自动推荐匹配的流程模板</td></tr>
+      <tr><td>3-流程绑定</td><td>流程模板*(从推荐列表选择或浏览全部), 预览流程图</td><td>流程选定后，活动列表自动生成</td></tr>
+      <tr><td>4-团队分配</td><td>项目负责人*, 技术负责人, 产品负责人, 质量负责人, 成员列表</td><td>从用户列表选择；可搜索</td></tr>
+      <tr><td>5-计划确认</td><td>活动列表(含工期/负责人), 甘特图预览, 确认创建</td><td>可调整各活动工期；确认后创建项目</td></tr>
+    </table>
+    <h5>创建后自动触发</h5>
+    <ul>
+      <li>[MUST] 创建Gitea仓库（仓库名=项目编号）</li>
+      <li>[MUST] 初始化标准目录结构到Git仓库</li>
+      <li>[MUST] 创建Mattermost项目频道，添加项目成员</li>
+      <li>[MUST] 生成项目活动实例（基于流程模板）</li>
+      <li>[SHOULD] 发送项目创建通知给所有成员</li>
+    </ul>
+    <h5>API端点</h5>
+    <div class="api-spec">
+      <span class="api-method post">POST</span><code>/api/v1/projects</code><br>
+      Request Body:
+      <pre><code>{
+  "name": "X波段TR组件",
+  "code": "RDP-STANDALONE-20260220-001",
+  "category": "standalone",
+  "product_line": "line_a",
+  "description": "...",
+  "process_template_id": "tpl_xxx",
+  "start_date": "2026-03-01",
+  "end_date": "2026-12-31",
+  "team": {
+    "leader_id": "usr_001",
+    "tech_leader_id": "usr_002",
+    "product_leader_id": "usr_003",
+    "members": ["usr_004", "usr_005"]
+  },
+  "activities": [
+    {"template_activity_id": "act_001", "duration_days": 10, "assignee_id": "usr_002"},
+    ...
+  ]
+}</code></pre>
+    </div>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 5步向导可前进/后退/暂存草稿</li>
+      <li>✅ 创建后自动创建Gitea仓库（通过API验证仓库存在）</li>
+      <li>✅ 创建后Mattermost频道自动创建（通过API验证）</li>
+      <li>✅ 流程模板绑定后活动列表正确生成</li>
+    </ul>
+  </div>
+</div>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-PM-003: 甘特图组件 <span class="badge badge-phase2">Phase 2</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 基于gantt-task-react实现交互式甘特图。支持任务拖拽调整时间、依赖关系连线（FS/FF/SS/SF）、关键路径高亮、里程碑标记。</p>
+    <h5>功能列表</h5>
+    <ul>
+      <li>[MUST] 按日/周/月三种时间粒度切换</li>
+      <li>[MUST] 拖拽调整任务开始/结束时间</li>
+      <li>[MUST] 任务依赖关系线（连线+箭头）</li>
+      <li>[MUST] 进度条显示（按完成百分比填充）</li>
+      <li>[SHOULD] 关键路径自动计算和高亮</li>
+      <li>[SHOULD] 基线对比（计划vs实际）</li>
+      <li>[MAY] MS Project (.mpp) 导入导出</li>
+    </ul>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 50个任务+依赖关系的甘特图渲染 ≤ 2秒</li>
+      <li>✅ 拖拽修改任务时间后，依赖任务自动级联调整</li>
+      <li>✅ 数据变更实时持久化到后端</li>
+    </ul>
+  </div>
+</div>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-PM-004: 项目文件夹与Git管理 <span class="badge badge-phase2">Phase 2</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 每个项目对应一个Gitea仓库。项目创建时自动初始化标准目录结构。支持通过Web界面浏览文件树、上传/下载文件。支持通过桌面辅助程序将项目文件夹下载至本地，本地修改后同步回服务器。</p>
+    <h5>标准目录结构</h5>
+    <pre><code>{项目编号}/
+├── 01-需求文档/
+├── 02-设计文档/
+│   ├── 方案设计/
+│   ├── 详细设计/
+│   └── 仿真报告/
+├── 03-设计文件/
+│   ├── 原理图/
+│   ├── PCB/
+│   └── 结构/
+├── 04-测试文档/
+├── 05-评审记录/
+├── 06-变更记录/
+└── README.md</code></pre>
+    <h5>API端点</h5>
+    <div class="api-spec">
+      <span class="api-method get">GET</span><code>/api/v1/projects/:id/files?path=/</code> → 文件树<br>
+      <span class="api-method get">GET</span><code>/api/v1/projects/:id/files/download?path=xxx</code> → 下载文件<br>
+      <span class="api-method post">POST</span><code>/api/v1/projects/:id/files/upload</code> → 上传文件<br>
+      <span class="api-method get">GET</span><code>/api/v1/projects/:id/files/history?path=xxx</code> → 版本历史
+    </div>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 项目创建后Gitea仓库含完整目录结构</li>
+      <li>✅ Web端可浏览文件树、查看文件内容（文本类）</li>
+      <li>✅ 文件上传自动创建git commit，commit message含文件名</li>
+      <li>✅ 版本历史列表显示每次提交的时间、作者、变更说明</li>
+    </ul>
+  </div>
+</div>
+
+<h1 id="c7" class="page-break"><span style="color:var(--primary)">7.</span> SRS-DEV — 项目开发模块</h1>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-DEV-001: 流程全景视图 <span class="badge badge-phase2">Phase 2</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 以BPMN风格图形化展示项目完整开发流程。当前活动高亮标识（蓝色脉冲），已完成活动（绿色✓），未开始活动（灰色），阻塞活动（红色！）。</p>
+    <h5>交互规格</h5>
+    <ul>
+      <li>[MUST] 点击任意活动节点 → 展开活动详情面板（侧边抽屉）</li>
+      <li>[MUST] 详情面板含：活动定义、输入文档列表、输出模板列表、执行指南、参考资料</li>
+      <li>[MUST] 进度百分比实时计算：(已完成活动数/总活动数) × 100</li>
+      <li>[SHOULD] 支持流程图缩放和拖拽平移</li>
+    </ul>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 流程图正确渲染所有活动节点和连线</li>
+      <li>✅ 当前活动有明显的视觉区分（动画高亮）</li>
+      <li>✅ 点击节点 ≤ 300ms 展开详情面板</li>
+    </ul>
+  </div>
+</div>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-DEV-002: 本地软件联动 <span class="badge badge-phase2">Phase 2</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 通过自定义URL协议 <code>rdp://</code> 实现Web端点击文件后调用本地软件打开。需配套桌面辅助程序。</p>
+    <h5>协议规范</h5>
+    <pre><code>rdp://open?file={local_path}&app={app_name}
+
+示例:
+rdp://open?file=/projects/RDP-001/03-设计文件/原理图/main.schdoc&app=altium
+rdp://open?file=/projects/RDP-001/02-设计文档/方案.md&app=obsidian
+rdp://open?file=/projects/RDP-001/02-设计文档/报告.docx&app=word</code></pre>
+    <h5>桌面辅助程序职责</h5>
+    <ol>
+      <li>[MUST] 系统安装时注册 <code>rdp://</code> 协议处理程序</li>
+      <li>[MUST] 解析协议URL，定位本地文件</li>
+      <li>[MUST] 根据 <code>app</code> 参数或文件扩展名调用对应本地软件</li>
+      <li>[MUST] 监听项目文件夹变更（FSWatcher），文件保存后自动执行 <code>git add + commit + push</code></li>
+      <li>[MUST] Commit message自动生成：<code>"完成 {文件名} 编写"</code></li>
+      <li>[SHOULD] 系统托盘图标，显示同步状态</li>
+    </ol>
+    <h5>文件类型映射表</h5>
+    <table>
+      <tr><th>扩展名</th><th>默认应用</th><th>备注</th></tr>
+      <tr><td>.schdoc / .pcbdoc / .PrjPCB</td><td>Altium Designer</td><td>打开后根据项目名自动创建工程文件</td></tr>
+      <tr><td>.md</td><td>Obsidian 或 Web Markdown编辑器</td><td>用户可选</td></tr>
+      <tr><td>.docx / .xlsx / .pptx</td><td>Microsoft Office</td><td>—</td></tr>
+      <tr><td>.pdf</td><td>Web内置PDF预览器</td><td>不调用本地</td></tr>
+      <tr><td>.aedt (ANSYS) / .cst</td><td>ANSYS / CST Studio</td><td>仿真文件</td></tr>
+    </table>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 点击Web端.schdoc文件，本地Altium Designer正确打开该文件</li>
+      <li>✅ 在Altium中保存文件后，30秒内自动commit到Gitea</li>
+      <li>✅ Web端可看到新的git提交记录</li>
+      <li>✅ 辅助程序无响应时，Web端显示"请安装/启动桌面辅助程序"提示</li>
+    </ul>
+  </div>
+</div>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-DEV-003: 活动执行与交付 <span class="badge badge-phase2">Phase 2</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 进入活动后，展示输出物模板列表、执行规范、参考资料（自动关联）。设计师通过Web点击模板开始工作，完成后标记文件完成、活动完成。</p>
+    <h5>活动执行流程</h5>
+    <ol>
+      <li>设计师进入活动 → 状态自动变为"进行中" → 更新项目进度</li>
+      <li>查看输出物模板列表 → 点击模板 → 调用本地软件/Web编辑器创建文件</li>
+      <li>完成单个文件编辑 → 点击"文件完成" → 自动git commit该文件</li>
+      <li>所有输出物完成 → 点击"活动完成" → 系统校验完成条件</li>
+      <li>活动完成 → 自动触发下一活动 → 通知下一活动负责人</li>
+    </ol>
+    <h5>自动关联参考资料</h5>
+    <p>[SHOULD] 根据项目类别和当前活动的标签，从知识库中自动匹配相关的参考项目、报告、论文、专利。匹配逻辑：标签交集 ≥ 2个 的知识条目按相关度排序展示。</p>
+    <h5>API端点</h5>
+    <div class="api-spec">
+      <span class="api-method get">GET</span><code>/api/v1/projects/:pid/activities/:aid</code> → 活动详情<br>
+      <span class="api-method put">PUT</span><code>/api/v1/projects/:pid/activities/:aid/status</code> → {"status": "completed"}<br>
+      <span class="api-method get">GET</span><code>/api/v1/projects/:pid/activities/:aid/templates</code> → 输出物模板列表<br>
+      <span class="api-method get">GET</span><code>/api/v1/projects/:pid/activities/:aid/references</code> → 自动关联参考资料<br>
+      <span class="api-method post">POST</span><code>/api/v1/projects/:pid/activities/:aid/deliverables</code> → 提交交付物<br>
+      <span class="api-method post">POST</span><code>/api/v1/projects/:pid/activities/:aid/feedback</code> → 提交反馈/问题
+    </div>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 活动完成后自动触发下一活动（状态变为pending→可开始）</li>
+      <li>✅ 活动进度变更实时反映在项目管理模块的进度百分比中</li>
+      <li>✅ 参考资料自动关联 ≥ 3条相关条目（有数据时）</li>
+      <li>✅ 反馈/问题支持@通知和线程回复</li>
+    </ul>
+  </div>
+</div>
+
+<h1 id="c8" class="page-break"><span style="color:var(--primary)">8.</span> SRS-SHELF — 产品货架模块</h1>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-SHELF-001: 产品浏览与筛选 <span class="badge badge-phase2">Phase 2</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 卡片式产品浏览页面，支持分类浏览（单机/模块/软件/基础）、多维筛选（类型/规格/成熟度/负责人）、关键词搜索。</p>
+    <h5>数据模型</h5>
+    <pre><code>TABLE products (
+  id            ULID PRIMARY KEY,
+  name          VARCHAR(200) NOT NULL,
+  code          VARCHAR(50) UNIQUE,
+  type          shelf_type NOT NULL,
+  sub_type      basic_subtype,           -- 基础件适用
+  maturity      product_maturity NOT NULL,
+  description   TEXT,
+  thumbnail_url VARCHAR(500),
+  specs         JSONB,                   -- 技术规格参数
+  tags          TEXT[],
+  owner_id      ULID REFERENCES users(id),
+  source_project_id ULID REFERENCES projects(id), -- 来源项目
+  version       INT DEFAULT 1,
+  parent_id     ULID REFERENCES products(id),      -- 版本链
+  test_data     JSONB,                   -- 测试数据摘要
+  usage_history JSONB DEFAULT '[]',      -- 应用履历
+  issues        JSONB DEFAULT '[]',      -- 问题记录
+  files_repo_id VARCHAR,                 -- Gitea仓库ID
+  created_at    TIMESTAMPTZ DEFAULT NOW(),
+  updated_at    TIMESTAMPTZ DEFAULT NOW()
+);</code></pre>
+    <h5>API端点</h5>
+    <div class="api-spec">
+      <span class="api-method get">GET</span><code>/api/v1/products?type=&maturity=&owner_id=&keyword=&tags=&page=1&page_size=20</code><br>
+      <span class="api-method get">GET</span><code>/api/v1/products/:id</code> → 产品详情（含测试数据、应用履历、问题记录等完整信息）<br>
+      <span class="api-method post">POST</span><code>/api/v1/products</code> → 产品上架<br>
+      <span class="api-method post">POST</span><code>/api/v1/products/:id/fork</code> → 基于产品创建新版本/新项目<br>
+      <span class="api-method post">POST</span><code>/api/v1/cart/add</code> → {"product_id": "xxx"} 加入选用清单
+    </div>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 产品卡片展示缩略图、名称、型号、成熟度徽章、负责人头像</li>
+      <li>✅ 支持≥4种筛选条件组合</li>
+      <li>✅ 产品详情页展示完整的测试数据和应用履历</li>
+      <li>✅ "加入选用清单"后可一键将资料包导入项目文件夹</li>
+    </ul>
+  </div>
+</div>
+
+<h1 id="c9"><span style="color:var(--primary)">9.</span> SRS-TECH — 技术货架模块</h1>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-TECH-001: 技术树与详情 <span class="badge badge-phase2">Phase 2</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 树形/脑图展示部门技术体系。L1: 设计技术/试验技术/仿真技术。L2: 集成/天线/射频/数字/电源/嵌入式等。L3: 具体技术条目。每个技术条目含TRL等级、负责人、关联项目/文件数。</p>
+    <h5>API端点</h5>
+    <div class="api-spec">
+      <span class="api-method get">GET</span><code>/api/v1/technologies/tree</code> → 技术树结构<br>
+      <span class="api-method get">GET</span><code>/api/v1/technologies/:id</code> → 技术详情<br>
+      <span class="api-method post">POST</span><code>/api/v1/technologies/:id/fork</code> → fork创建新技术项目
+    </div>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 技术树支持展开/折叠，至少3层深度</li>
+      <li>✅ 每个节点显示TRL等级徽章和条目数</li>
+      <li>✅ 点击技术条目展示完整详情（描述/文件/关联项目/负责人）</li>
+    </ul>
+  </div>
+</div>
+
+<h1 id="c10" class="page-break"><span style="color:var(--primary)">10.</span> SRS-KB — 知识库模块</h1>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-KB-001: 知识分类与浏览 <span class="badge badge-phase3">Phase 3</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 多级分类体系浏览知识条目。分类树：理论知识(电子书/论文/专利/专业知识) | 标准规范(国标/国军标/航天/行业/部门) | 制度文件 | 流程说明(L1-L4) | 正反面案例 | 仿真模型 | 软件使用指南。</p>
+    <h5>数据模型</h5>
+    <pre><code>TABLE knowledge_items (
+  id            ULID PRIMARY KEY,
+  title         VARCHAR(300) NOT NULL,
+  category      knowledge_category NOT NULL,
+  sub_category  VARCHAR(100),        -- 二级分类
+  tags          TEXT[] DEFAULT '{}',
+  content       TEXT,                -- Markdown内容(如有)
+  file_path     VARCHAR(500),        -- 文件存储路径
+  file_type     VARCHAR(20),         -- pdf/md/docx/aedt/cst等
+  obsidian_path VARCHAR(500),        -- Obsidian Vault对应路径
+  zotero_key    VARCHAR(100),        -- Zotero条目Key
+  author_id     ULID REFERENCES users(id),
+  view_count    INT DEFAULT 0,
+  download_count INT DEFAULT 0,
+  status        VARCHAR(20) DEFAULT 'published',
+  created_at    TIMESTAMPTZ DEFAULT NOW(),
+  updated_at    TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_kb_tags ON knowledge_items USING GIN(tags);
+CREATE INDEX idx_kb_category ON knowledge_items(category, sub_category);</code></pre>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 分类树支持至少三级导航</li>
+      <li>✅ 条目支持按标签、分类、关键词筛选</li>
+      <li>✅ Markdown文件可Web端渲染预览（含公式、表格、代码高亮）</li>
+      <li>✅ PDF文件可Web端在线预览</li>
+    </ul>
+  </div>
+</div>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-KB-002: Obsidian/Zotero集成 <span class="badge badge-phase3">Phase 3</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 知识库文件路径与Obsidian Vault保持一致。Web端可渲染Obsidian Markdown（含Wiki链接 <code>[[]]</code>、嵌入 <code>![[]]</code>、Callout等语法）。Zotero文献库的分类和条目可在Web端浏览，PDF可在线预览。</p>
+    <h5>Obsidian集成规格</h5>
+    <ul>
+      <li>[MUST] Web端知识库根目录 = Obsidian Vault 根目录（路径映射配置）</li>
+      <li>[MUST] 支持渲染：<code>[[WikiLink]]</code>、<code>![[嵌入]]</code>、<code>> [!NOTE]</code> Callout、YAML Front Matter</li>
+      <li>[MUST] Web端编辑后，文件保存到Vault对应路径</li>
+      <li>[SHOULD] 点击"在Obsidian中打开"调用 <code>obsidian://open?vault=xxx&file=xxx</code></li>
+    </ul>
+    <h5>Zotero集成规格</h5>
+    <ul>
+      <li>[MUST] 读取Zotero本地数据库或WebDAV同步的文献数据</li>
+      <li>[MUST] 展示Zotero分类结构和条目列表</li>
+      <li>[SHOULD] 论文PDF在Web端在线预览</li>
+    </ul>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ Obsidian Wiki链接在Web端可正确跳转</li>
+      <li>✅ Obsidian Callout语法正确渲染为对应样式</li>
+      <li>✅ Zotero文献列表正确展示分类和条目</li>
+      <li>✅ 编辑保存的文件在Obsidian中可见（路径一致）</li>
+    </ul>
+  </div>
+</div>
+
+<h1 id="c11"><span style="color:var(--primary)">11.</span> SRS-FORUM — 技术论坛</h1>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-FORUM-001: 论坛基础功能 <span class="badge badge-phase3">Phase 3</span> <span class="badge badge-p1">P1</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[SHOULD] 按技术领域分版块的技术交流论坛。支持富文本/Markdown发帖、回复、@提及、标签分类、全文搜索。</p>
+    <h5>板块结构</h5>
+    <p>天线技术 | 射频技术 | 数字技术 | 电源技术 | 仿真技术 | 通用讨论 | 求助问答</p>
+    <h5>API端点</h5>
+    <div class="api-spec">
+      <span class="api-method get">GET</span><code>/api/v1/forum/boards</code> → 版块列表<br>
+      <span class="api-method get">GET</span><code>/api/v1/forum/posts?board=&tag=&keyword=&page=1</code> → 帖子列表<br>
+      <span class="api-method post">POST</span><code>/api/v1/forum/posts</code> → 发帖<br>
+      <span class="api-method post">POST</span><code>/api/v1/forum/posts/:id/replies</code> → 回复<br>
+      <span class="api-method put">PUT</span><code>/api/v1/forum/posts/:id/best-reply</code> → 标记最佳回复
+    </div>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 发帖支持Markdown格式+图片上传+代码块</li>
+      <li>✅ @提及自动发送站内通知</li>
+      <li>✅ 最佳答案标记后置顶显示</li>
+    </ul>
+  </div>
+</div>
+
+<h1 id="c12"><span style="color:var(--primary)">12.</span> SRS-IM — 即时通信</h1>
+
+<div class="req-box">
+  <div class="req-box-header">SRS-IM-001: Mattermost集成 <span class="badge badge-phase1">Phase 1</span> <span class="badge badge-p0">P0</span></div>
+  <div class="req-box-body">
+    <h5>描述</h5>
+    <p>[MUST] 部署Mattermost Team Edition，通过Nginx反向代理集成到平台。SSO与Casdoor对接，实现统一登录。项目创建时自动创建Mattermost频道。</p>
+    <h5>集成方式</h5>
+    <ul>
+      <li>[MUST] Mattermost通过 <code>/chat/*</code> 路径代理，iframe嵌入或独立Tab打开</li>
+      <li>[MUST] OAuth2/OpenID Connect对接Casdoor，实现SSO</li>
+      <li>[MUST] 通过Mattermost API自动创建项目频道</li>
+      <li>[SHOULD] 配置Incoming Webhook接收项目状态变更通知</li>
+    </ul>
+    <h5>自动化集成</h5>
+    <pre><code>// 项目创建后自动执行:
+1. POST /api/v4/channels → 创建频道 (name=project-{code})
+2. POST /api/v4/channels/{id}/members → 添加项目成员
+3. POST /api/v4/posts → 发送欢迎消息 "项目{name}已创建，欢迎团队成员！"
+
+// 项目状态变更时:
+POST /hooks/{webhook_id} → "项目{name}状态更新为{status}"</code></pre>
+    <h5>验收标准</h5>
+    <ul>
+      <li>✅ 平台登录后无需再次登录Mattermost（SSO生效）</li>
+      <li>✅ 项目创建后Mattermost自动出现对应频道</li>
+      <li>✅ 频道成员与项目团队成员一致</li>
+      <li>✅ 项目状态变更消息自动推送到频道</li>
+    </ul>
+  </div>
+</div>
+
+<h1 id="c13" class="page-break"><span style="color:var(--primary)">13.</span> 非功能规格</h1>
+
+<table>
+  <tr><th>类别</th><th>指标</th><th>要求</th><th>级别</th></tr>
+  <tr><td rowspan="4">性能</td><td>首屏加载</td><td>≤ 3秒（局域网）</td><td>[MUST]</td></tr>
+  <tr><td>API响应</td><td>常规 ≤ 500ms，复杂查询 ≤ 2s</td><td>[MUST]</td></tr>
+  <tr><td>并发用户</td><td>≥ 50人同时在线</td><td>[MUST]</td></tr>
+  <tr><td>文件上传</td><td>单文件 ≤ 500MB，支持断点续传</td><td>[SHOULD]</td></tr>
+  <tr><td rowspan="4">安全</td><td>认证</td><td>JWT + 可选OTP二次验证</td><td>[MUST]</td></tr>
+  <tr><td>传输加密</td><td>TLS 1.2+（HTTPS）</td><td>[MUST]</td></tr>
+  <tr><td>密码存储</td><td>bcrypt (cost ≥ 10)</td><td>[MUST]</td></tr>
+  <tr><td>审计日志</td><td>登录/权限变更/文件操作全量记录</td><td>[MUST]</td></tr>
+  <tr><td rowspan="3">可用性</td><td>系统可用性</td><td>工作时间 ≥ 99%</td><td>[MUST]</td></tr>
+  <tr><td>数据备份</td><td>每日自动备份，保留30天</td><td>[MUST]</td></tr>
+  <tr><td>故障恢复</td><td>RTO ≤ 1小时</td><td>[SHOULD]</td></tr>
+  <tr><td rowspan="3">可维护性</td><td>日志</td><td>结构化JSON日志，支持级别过滤</td><td>[MUST]</td></tr>
+  <tr><td>健康检查</td><td>各服务 /health 端点</td><td>[MUST]</td></tr>
+  <tr><td>配置管理</td><td>环境变量 + .env 文件，支持热重载</td><td>[SHOULD]</td></tr>
+</table>
+
+<h1 id="c14"><span style="color:var(--primary)">14.</span> API 设计规范</h1>
+
+<h3>14.1 统一响应格式</h3>
+<pre><code>// 成功响应
+{
+  "code": 0,
+  "message": "success",
+  "data": { ... },
+  "meta": {                    // 分页时必须
+    "total": 100,
+    "page": 1,
+    "page_size": 20
+  }
+}
+
+// 错误响应
+{
+  "code": 40001,               // 业务错误码
+  "message": "用户名已存在",
+  "data": null
+}
+
+// 错误码规范:
+// 400xx - 请求参数错误
+// 401xx - 认证错误
+// 403xx - 权限不足
+// 404xx - 资源不存在
+// 500xx - 服务器内部错误</code></pre>
+
+<h3>14.2 认证头格式</h3>
+<pre><code>Authorization: Bearer {access_token}
+
+// Token刷新:
+POST /api/v1/auth/refresh
+Body: { "refresh_token": "xxx" }
+Response: { "access_token": "new_token", "expires_in": 7200 }</code></pre>
+
+<h1 id="c15" class="page-break"><span style="color:var(--primary)">15.</span> 验收测试矩阵</h1>
+
+<table>
+  <tr><th>测试ID</th><th>测试项</th><th>测试方法</th><th>通过标准</th><th>阶段</th></tr>
+  <tr><td>AT-001</td><td>用户登录</td><td>输入正确用户名密码</td><td>成功跳转工作台，JWT有效</td><td>P1</td></tr>
+  <tr><td>AT-002</td><td>权限隔离</td><td>设计师访问管理页面</td><td>返回403，页面显示无权限</td><td>P1</td></tr>
+  <tr><td>AT-003</td><td>项目创建</td><td>5步向导完整走通</td><td>项目创建 + Gitea仓库 + MM频道</td><td>P1</td></tr>
+  <tr><td>AT-004</td><td>甘特图交互</td><td>拖拽调整任务时间</td><td>依赖任务级联更新，数据持久化</td><td>P2</td></tr>
+  <tr><td>AT-005</td><td>本地软件调用</td><td>点击.schdoc文件</td><td>Altium Designer打开对应文件</td><td>P2</td></tr>
+  <tr><td>AT-006</td><td>Git自动提交</td><td>本地保存文件</td><td>30s内Gitea出现新commit</td><td>P2</td></tr>
+  <tr><td>AT-007</td><td>活动流转</td><td>完成活动点击确认</td><td>下一活动激活，通知发送</td><td>P2</td></tr>
+  <tr><td>AT-008</td><td>产品选用</td><td>加入购物车+导入项目</td><td>产品文件包出现在项目文件夹</td><td>P2</td></tr>
+  <tr><td>AT-009</td><td>全文搜索</td><td>搜索关键词</td><td>≤500ms返回结果，中文分词正确</td><td>P3</td></tr>
+  <tr><td>AT-010</td><td>Obsidian渲染</td><td>查看含WikiLink的MD</td><td>链接可点击跳转，Callout正确渲染</td><td>P3</td></tr>
+  <tr><td>AT-011</td><td>Mattermost SSO</td><td>平台登录后访问Chat</td><td>无需再次登录</td><td>P1</td></tr>
+  <tr><td>AT-012</td><td>并发测试</td><td>50用户同时操作</td><td>API响应 ≤ 2s，无500错误</td><td>P4</td></tr>
+  <tr><td>AT-013</td><td>备份恢复</td><td>模拟数据库故障恢复</td><td>1小时内恢复，数据无丢失</td><td>P4</td></tr>
+  <tr><td>AT-014</td><td>贡献热力图</td><td>查看设计师Profile</td><td>365天数据正确渲染</td><td>P1</td></tr>
+  <tr><td>AT-015</td><td>项目文件同步</td><td>上传文件到服务器</td><td>本地和服务器文件一致</td><td>P2</td></tr>
+</table>
+
+<div class="callout-success callout" style="margin-top: 30px;">
+  <strong>Agent 实现总结：</strong>
+  <ul>
+    <li>本SRS共定义 <strong>9大模块、20+功能规格、15个验收测试用例</strong></li>
+    <li>核心数据模型包含 <strong>10个实体表、12种枚举类型</strong></li>
+    <li>API端点共计 <strong>40+个RESTful端点</strong></li>
+    <li>集成的开源服务：Casdoor、Casbin、Gitea、Mattermost、MeiliSearch、MinIO 共<strong>6个</strong></li>
+    <li>实现时请严格按Phase 1→2→3→4的顺序推进，每个Phase结束时运行对应的验收测试</li>
+  </ul>
+</div>
+
+<footer style="margin-top: 60px; padding-top: 20px; border-top: 2px solid var(--border); text-align: center; color: var(--text-muted); font-size: 0.9em;">
+  <p>微波研发部门研发管理平台 — 需求规格说明书 V1.0</p>
+  <p>© 2026 微波研发部门 | 面向 Agent 集群实现</p>
+</footer>
+
+</body>
+</html>
