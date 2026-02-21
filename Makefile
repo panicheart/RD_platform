@@ -141,6 +141,16 @@ agent-team-start:
 	@echo "  ./agents/5-agent-team/start-frontend.sh"
 	@echo "  ./agents/5-agent-team/start-devops.sh"
 
+# 一键启动所有Agent
+agent-team-start-all:
+	@echo "🚀 一键启动5-Agent Team..."
+	./agents/5-agent-team/start-all.sh
+
+# 停止所有Agent
+agent-team-stop:
+	@echo "🛑 停止5-Agent Team..."
+	./agents/5-agent-team/stop-all.sh
+
 # 启动单个Agent
 agent-pm:
 	@echo "🚀 启动 PM-Agent (项目经理)..."
