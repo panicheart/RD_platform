@@ -84,13 +84,17 @@ RD_platform/
 
 ## 开发阶段
 
-### Phase 1: 基础骨架
-- [x] 项目骨架初始化 (InfraAgent) - ✅ 已完成
-- [ ] 门户界面 (PortalAgent) - 准备就绪
-- [ ] 用户管理 (UserAgent) - 准备就绪
-- [ ] 项目管理 (ProjectAgent) - 准备就绪
-- [ ] 安全合规 (SecurityAgent) - 准备就绪
-- [ ] 基础设施完善 (InfraAgent) - 准备就绪
+### Phase 1: 基础骨架 - ✅ 已完成
+ [x] 项目骨架初始化 (InfraAgent)
+ [x] 门户界面 (PortalAgent) - 公开首页
+ [x] 登录认证 (UserAgent) - LoginPage + useAuth hook
+ [x] 个人工作台 (PortalAgent) - WorkbenchPage
+ [x] 用户管理 (UserAgent) - 后端 + 前端
+ [x] 项目管理 (ProjectAgent) - 后端 + 前端
+ [x] 安全合规 (SecurityAgent) - 审计日志、数据分级
+ [x] 文件管理 (ProjectAgent)
+ [x] 数据库 (InfraAgent) - PostgreSQL schema
+ [x] 部署配置 (InfraAgent) - systemd、Nginx、脚本
 
 ### Phase 2: 核心业务
 - [ ] 流程引擎 (WorkflowAgent)
