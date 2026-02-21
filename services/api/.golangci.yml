@@ -1,0 +1,90 @@
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - gofmt
+    - goimports
+    - misspell
+    - revive
+    - goconst
+    - gocyclo
+    - dupl
+    - exportloopref
+    - gocritic
+    - prealloc
+    - unconvert
+    - unparam
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment
+  gocyclo:
+    min-complexity: 15
+  dupl:
+    threshold: 100
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  revive:
+    rules:
+      - name: var-naming
+        severity: warning
+        disabled: false
+      - name: exported
+        severity: warning
+        disabled: false
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - dupImport
+      - ifElseChain
+      - octalLiteral
+      - whyNoLint
+      - wrapperFunc
+
+run:
+  timeout: 5m
+  skip-dirs:
+    - vendor
+    - tmp
+  skip-files:
+    - ".*\\.generated\\.go$"
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - dupl
+        - gosec
+        - goconst
+        - gocyclo
+    - path: handlers/
+      linters:
+        - dupl
+    - linters:
+        - staticcheck
+      text: "SA1019:"
+
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  new: false
+
+output:
+  formats:
+    - format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
