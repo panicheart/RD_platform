@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateULID, isValidULID } from '../utils/id';
+import { generateULID, isValidULID } from './id';
 
 describe('generateULID', () => {
   it('should generate a valid ULID', () => {
