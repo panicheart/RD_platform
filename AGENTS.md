@@ -103,7 +103,7 @@ RD_platform/
 | **KnowledgeAgent** | 知识库 | 知识服务、Obsidian集成、中文分词 | Go + 文件同步 |
 | **SearchAgent** | 搜索服务 | 全文搜索、索引管理 | Go + MeiliSearch |
 | **ForumAgent** | 技术论坛 | 论坛服务、帖子管理 | Go + React |
-| **InfraAgent** | 基础设施 | 部署脚本、配置管理、监控告警 | Shell + systemd |
+| **InfraAgent** | 基础设施 | 部署脚本、配置管理、数据库设计、Nginx配置 | Shell + systemd |
 | **DesktopAgent** | 桌面辅助程序 | rdp协议注册、Git自动提交、冲突处理 | Tauri |
 | **AnalyticsAgent** | 数据分析 | 仪表盘、报表服务 | Go + ECharts |
 | **SecurityAgent** | 安全合规 | 数据分级、导出审批、屏幕水印、会话控制、审计日志 | Go + 安全策略引擎 |
@@ -322,10 +322,10 @@ Agent A vs Agent B 意见不一致
 
 | 阶段 | 执行Agent | 核心任务 | 交付物 | 里程碑 |
 |------|----------|----------|--------|--------|
-| **一期：基础骨架** | PortalAgent<br>UserAgent<br>ProjectAgent<br>InfraAgent | 单体前端、用户管理(Casdoor)、项目管理基础(CRUD+文件管理)、内置通知、systemd部署 | 可登录使用的基础平台，支持项目创建和文件上传下载 | 可登录使用的基础平台 |
-| **二期：核心业务** | WorkflowAgent<br>DevAgent<br>ShelfAgent<br>DesktopAgent | 流程引擎(状态机)、项目开发模块、甘特图、产品/技术货架、Gitea集成、本地软件联动 | 完整研发管理流程上线，支持流程执行和Git版本管理 | 研发流程上线 |
+| **一期：基础骨架** | PortalAgent<br>UserAgent<br>ProjectAgent<br>SecurityAgent<br>InfraAgent | 单体前端、用户管理(Casdoor)、项目管理基础(CRUD+文件管理)、安全合规(数据分级/审计日志)、内置通知、systemd部署 | 可登录使用的基础平台，支持项目创建和文件上传下载 | 可登录使用的基础平台 |
+| **二期：核心业务** | WorkflowAgent<br>DevAgent<br>ShelfAgent<br>DesktopAgent<br>QMAgent | 流程引擎(状态机)、项目开发模块、甘特图、产品/技术货架、质量管理(ECR/缺陷/门禁)、Gitea集成、本地软件联动 | 完整研发管理流程上线，支持流程执行和Git版本管理 | 研发流程上线 |
 | **三期：知识智能** | KnowledgeAgent<br>SearchAgent<br>ForumAgent | 知识库模块、Obsidian/Zotero集成、全文搜索(MeiliSearch)、技术论坛、Mattermost集成(可选) | 知识管理体系上线，支持知识沉淀和全文搜索 | 知识管理上线 |
-| **四期：优化完善** | AnalyticsAgent<br>各Feature Agents | 数据分析仪表盘、流程优化、性能调优、用户体验提升 | 全功能稳定版本 | 全功能稳定版本 |
+| **四期：优化完善** | AnalyticsAgent<br>MonitorAgent<br>各Feature Agents | 数据分析仪表盘、运维监控(APM/日志/告警)、流程优化、性能调优、用户体验提升 | 全功能稳定版本 | 全功能稳定版本 |
 
 ### 6.2 每阶段人类监督点
 
