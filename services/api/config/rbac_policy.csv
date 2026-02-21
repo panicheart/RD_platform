@@ -1,0 +1,54 @@
+# RBAC Policy File
+# Format: p = <subject>, <object>, <action>
+# Role definitions: g = <user>, <role>
+
+# Admin has all permissions
+p = admin, user, read
+p = admin, user, write
+p = admin, user, delete
+p = admin, organization, read
+p = admin, organization, write
+p = admin, organization, delete
+p = admin, project, read
+p = admin, project, write
+p = admin, project, delete
+p = admin, announcement, read
+p = admin, announcement, write
+p = admin, announcement, delete
+p = admin, notification, read
+p = admin, notification, write
+p = admin, notification, delete
+p = admin, file, read
+p = admin, file, write
+p = admin, file, delete
+
+# Manager has most permissions
+p = manager, user, read
+p = manager, user, write
+p = manager, organization, read
+p = manager, organization, write
+p = manager, project, read
+p = manager, project, write
+p = manager, project, delete
+p = manager, announcement, read
+p = manager, announcement, write
+p = manager, notification, read
+p = manager, notification, write
+p = manager, file, read
+p = manager, file, write
+
+# Leader has project and file permissions
+p = leader, user, read
+p = leader, project, read
+p = leader, project, write
+p = leader, file, read
+p = leader, file, write
+p = leader, notification, read
+
+# Designer has basic read permissions
+p = designer, user, read
+p = designer, project, read
+p = designer, file, read
+p = designer, file, write
+p = designer, notification, read
+p = designer, announcement, read

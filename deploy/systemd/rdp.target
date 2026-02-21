@@ -1,0 +1,8 @@
+[Unit]
+Description=RDP Services Target
+Documentation=https://github.com/rdp-platform
+After=network.target
+Wants=network-online.target
+
+[Install]
+WantedBy=multi-user.target
