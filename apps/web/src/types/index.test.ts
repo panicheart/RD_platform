@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type { User, Project, APIResponse } from '@types';
+import type { User, Project, APIResponse } from './index';
 
 describe('Type Definitions', () => {
   it('should define User type correctly', () => {

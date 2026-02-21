@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import type { APIResponse, APIError, PaginatedResponse } from '@types';
+import type { APIResponse, APIError, PaginatedResponse } from '../types';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
