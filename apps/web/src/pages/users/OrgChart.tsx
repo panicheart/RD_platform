@@ -30,6 +30,7 @@ import {
 } from '@ant-design/icons';
 import { useAuth } from '@/hooks/useAuth';
 import { userAPI } from '@/services/user';
+import type { Role } from '@/types';
 
 const { Title, Text } = Typography;
 const { DirectoryTree } = Tree;
@@ -88,10 +89,11 @@ export default function OrgChart() {
     setLoading(true);
     try {
       const data = await userAPI.getOrganizationTree();
-      setOrgTree(buildTree(data));
+      const treeData = buildTree(data);
+      setOrgTree(treeData);
       // 默认选中第一个部门
-      if (data.length > 0 && !selectedOrg) {
-        setSelectedOrg(data[0]);
+      if (treeData.length > 0 && !selectedOrg) {
+        setSelectedOrg(treeData[0] || null);
       }
     } catch (error: any) {
       message.error(error.message || '获取组织架构失败');
@@ -104,7 +106,7 @@ export default function OrgChart() {
     setMembersLoading(true);
     try {
       const data = await userAPI.getOrganizationMembers(orgId);
-      setMembers(data);
+      setMembers(data as any);
     } catch (error: any) {
       message.error(error.message || '获取成员列表失败');
     } finally {
@@ -163,8 +165,8 @@ export default function OrgChart() {
     return <Tag color={config.color}>{config.text}</Tag>;
   };
 
-  const handleSelect = (_: React.Key[], { node }: { node: OrgNode }) => {
-    setSelectedOrg(node);
+  const handleSelect = (_: React.Key[], { node }: { node: any }) => {
+    setSelectedOrg(node as OrgNode);
   };
 
   const handleAdd = () => {
@@ -290,10 +292,10 @@ export default function OrgChart() {
           <Card title="组织层级" loading={loading}>
             {orgTree.length > 0 ? (
               <DirectoryTree
-                treeData={orgTree}
-                titleRender={titleRender}
-                onSelect={handleSelect}
-                selectedKeys={selectedOrg ? [selectedOrg.key] : []}
+                treeData={orgTree as any}
+                titleRender={titleRender as any}
+                onSelect={handleSelect as any}
+                selectedKeys={selectedOrg?.key ? [selectedOrg.key] : []}
                 defaultExpandAll
               />
             ) : (

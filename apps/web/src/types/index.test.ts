@@ -9,7 +9,9 @@ describe('Type Definitions', () => {
       email: 'test@example.com',
       displayName: 'Test User',
       status: 'active',
+      role: 'designer',
       roles: [],
+      isActive: true,
       createdAt: '2024-01-01T00:00:00Z',
       updatedAt: '2024-01-01T00:00:00Z',
     };

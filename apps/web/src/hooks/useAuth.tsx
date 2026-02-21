@@ -1,15 +1,6 @@
 import { useState, useEffect, createContext, useContext } from 'react'
 import { api } from '@/utils/api'
-
-interface User {
-  id: string
-  username: string
-  display_name: string
-  email?: string
-  avatar_url?: string
-  role: string
-  team?: string
-}
+import type { User } from '@/types'
 
 interface AuthContextType {
   user: User | null
@@ -17,7 +8,7 @@ interface AuthContextType {
   isLoading: boolean
   login: (username: string, password: string) => Promise<void>
   logout: () => Promise<void>
-  refreshUser: () => Promise<void>
+  refreshUser: () => Promise<User>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -31,7 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const checkAuth = async () => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token')
     if (!token) {
       setIsLoading(false)
       return
@@ -39,9 +30,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const response = await api.get('/users/me')
-      setUser(response.data.data)
+      const userData = response.data?.data || response.data
+      setUser(userData)
     } catch (error) {
       localStorage.removeItem('token')
+      localStorage.removeItem('access_token')
       api.defaults.headers.common['Authorization'] = ''
     } finally {
       setIsLoading(false)
@@ -63,9 +56,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const demoUser: User = {
       id: '1',
       username: username,
+      email: `${username}@example.com`,
       display_name: username === 'admin' ? '管理员' : username,
+      displayName: username === 'admin' ? '管理员' : username,
       role: username === 'admin' ? 'admin' : 'designer',
-      team: '软件',
+      roles: [{ id: '1', name: username === 'admin' ? '管理员' : '工程师', code: username === 'admin' ? 'admin' : 'designer', permissions: [] }],
+      status: 'active',
+      isActive: true,
+      title: '工程师',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     }
     
     const demoToken = 'demo-token-' + Date.now()
@@ -82,12 +82,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Ignore errors when backend is not available
     } finally {
       localStorage.removeItem('token')
+      localStorage.removeItem('access_token')
       delete api.defaults.headers.common['Authorization']
       setUser(null)
     }
   }
 
-  const refreshUser = async () => {
+  const refreshUser = async (): Promise<User> => {
     try {
       const response = await api.get('/users/me')
       const userData = response.data?.data || response.data

@@ -5,7 +5,6 @@ import (
 
 	"rdp/services/api/handlers"
 	"rdp/services/api/middleware"
-	"rdp/services/api/models"
 	"rdp/services/api/services"
 )
 

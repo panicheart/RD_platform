@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Spin, Result, Button } from 'antd';
 import { MainLayout, PortalLayout } from '@/components/Layout';
 import { useAuth } from '@/hooks/useAuth';
+import type { Role } from '@/types';
 
 // 懒加载页面组件
 const PortalPage = lazy(() => import('./pages/portal/PortalPage'));

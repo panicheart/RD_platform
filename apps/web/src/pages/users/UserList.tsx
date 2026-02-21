@@ -28,7 +28,7 @@ import {
 } from '@ant-design/icons';
 import { useAuth } from '@/hooks/useAuth';
 import { userAPI } from '@/services/user';
-import type { User } from '@/types';
+import type { User, Role } from '@/types';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
