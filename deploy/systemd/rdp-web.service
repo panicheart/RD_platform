@@ -1,0 +1,14 @@
+[Unit]
+Description=RDP Web Frontend (Nginx)
+Documentation=https://github.com/your-org/rdp-platform
+After=network.target rdp-api.service
+Wants=rdp-api.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/true
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target rdp.target

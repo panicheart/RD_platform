@@ -1,8 +1,8 @@
 [Unit]
 Description=RDP API Server
 Documentation=https://github.com/your-org/rdp-platform
-After=network.target postgresql.service
-Wants=postgresql.service
+After=network.target postgresql.service redis.service
+Wants=postgresql.service redis.service
 
 [Service]
 Type=simple
@@ -11,19 +11,40 @@ Group=rdp
 WorkingDirectory=/opt/rdp
 ExecStart=/opt/rdp/bin/api
 ExecReload=/bin/kill -HUP $MAINPID
+ExecStartPre=/opt/rdp/scripts/health-check.sh --pre-check
 Restart=on-failure
 RestartSec=5s
+StartLimitInterval=60s
+StartLimitBurst=3
 
+# Environment variables
 Environment=RDP_ENV=production
 Environment=RDP_API_PORT=8080
 EnvironmentFile=-/opt/rdp/config/rdp-api.env
 
+# Security settings
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/rdp/logs /opt/rdp/data
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=false
+
+# Resource limits
 LimitNOFILE=65536
 LimitNPROC=65536
+LimitAS=1G
+LimitRSS=512M
 
+# Logging
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=rdp-api
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=multi-user.target rdp.target

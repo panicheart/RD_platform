@@ -4,5 +4,9 @@ Documentation=https://github.com/rdp-platform
 After=network.target
 Wants=network-online.target
 
+# This target groups all RDP related services
+# Use: systemctl start rdp.target
+# to start all RDP services at once
+
 [Install]
 WantedBy=multi-user.target

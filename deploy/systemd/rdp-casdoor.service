@@ -1,5 +1,5 @@
 [Unit]
-Description=RDP Casdoor Service
+Description=RDP Casdoor Authentication Service
 Documentation=https://github.com/casdoor/casdoor
 After=network.target postgresql.service
 Wants=postgresql.service
@@ -13,12 +13,26 @@ ExecStart=/opt/casdoor/casdoor
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 RestartSec=5s
+StartLimitInterval=60s
+StartLimitBurst=3
 
+# Environment
+EnvironmentFile=-/opt/casdoor/conf/app.conf
+
+# Security settings
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/casdoor/logs /opt/casdoor/files
+
+# Resource limits
 LimitNOFILE=65536
+LimitNPROC=65536
 
+# Logging
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=rdp-casdoor
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=multi-user.target rdp.target
