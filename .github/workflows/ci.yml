@@ -1,0 +1,153 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  frontend-test:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: apps/web/package.json
+    
+    - name: Install dependencies
+      run: |
+        cd apps/web
+        npm ci
+    
+    - name: Run type check
+      run: |
+        cd apps/web
+        npm run typecheck
+    
+    - name: Run linter
+      run: |
+        cd apps/web
+        npm run lint
+    
+    - name: Run tests
+      run: |
+        cd apps/web
+        npm run test -- --coverage
+    
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./apps/web/coverage
+        flags: frontend
+        name: frontend-coverage
+
+  backend-test:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: rdp
+          POSTGRES_PASSWORD: rdp_password
+          POSTGRES_DB: rdp_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+        cache-dependency-path: services/api/go.sum
+    
+    - name: Install dependencies
+      run: |
+        cd services/api
+        go mod download
+    
+    - name: Run linter
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: latest
+        working-directory: services/api
+    
+    - name: Run tests
+      run: |
+        cd services/api
+        go test -v -race -coverprofile=coverage.out ./...
+      env:
+        RDP_ENV: test
+        RDP_DB_HOST: localhost
+        RDP_DB_PORT: 5432
+        RDP_DB_NAME: rdp_test
+        RDP_DB_USER: rdp
+        RDP_DB_PASSWORD: rdp_password
+    
+    - name: Generate coverage report
+      run: |
+        cd services/api
+        go tool cover -func=coverage.out
+    
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./services/api
+        files: coverage.out
+        flags: backend
+        name: backend-coverage
+
+  build:
+    name: Build Check
+    runs-on: ubuntu-latest
+    needs: [frontend-test, backend-test]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: apps/web/package.json
+    
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+    
+    - name: Install frontend dependencies
+      run: |
+        cd apps/web
+        npm ci
+    
+    - name: Build frontend
+      run: |
+        cd apps/web
+        npm run build
+    
+    - name: Install Go dependencies
+      run: |
+        cd services/api
+        go mod download
+    
+    - name: Build backend
+      run: |
+        cd services/api
+        go build -o bin/api main.go
