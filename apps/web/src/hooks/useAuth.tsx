@@ -88,8 +88,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const refreshUser = async () => {
-    const response = await api.get('/users/me')
-    setUser(response.data.data)
+    try {
+      const response = await api.get('/users/me')
+      const userData = response.data?.data || response.data
+      setUser(userData)
+      return userData
+    } catch (error) {
+      console.error('Failed to refresh user:', error)
+      throw error
+    }
   }
 
   return (

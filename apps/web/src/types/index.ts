@@ -1,15 +1,6 @@
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  displayName: string;
-  avatar?: string;
-  status: 'active' | 'inactive' | 'locked' | 'pending';
-  roles: Role[];
-  organization?: Organization;
-  createdAt: string;
-  updatedAt: string;
-}
+// 统一导出所有类型
+
+export * from './user';
 
 export interface Role {
   id: string;
@@ -26,6 +17,32 @@ export interface Organization {
   type: 'department' | 'team' | 'group' | 'product_line';
   parentId?: string;
   path: string;
+}
+
+// 兼容hooks/useAuth.tsx中的User类型
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  // 支持两种命名风格（后端返回vs前端使用）
+  displayName?: string;
+  display_name?: string;
+  avatar?: string;
+  avatar_url?: string;
+  phone?: string;
+  status: 'active' | 'inactive' | 'locked' | 'pending';
+  role: string;
+  roles: Role[];
+  organization?: Organization;
+  organizationId?: string;
+  title?: string;
+  bio?: string;
+  skills?: string[];
+  isActive: boolean;
+  lastLoginAt?: string;
+  lastLoginIp?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Project {
@@ -72,7 +89,7 @@ export interface ProjectMember {
   joinedAt: string;
 }
 
-export interface File {
+export interface FileItem {
   id: string;
   name: string;
   path: string;
@@ -112,6 +129,7 @@ export interface Notification {
 
 export interface PaginatedResponse<T> {
   data: T[];
+  items?: T[];  // 兼容不同API返回格式
   total: number;
   page: number;
   pageSize: number;

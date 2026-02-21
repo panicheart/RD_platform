@@ -12,6 +12,7 @@ import {
   Space,
   Typography,
 } from 'antd';
+import type { MenuProps } from 'antd';
 import {
   HomeOutlined,
   DashboardOutlined,
@@ -26,30 +27,19 @@ import {
   MenuUnfoldOutlined,
   LogoutOutlined,
   DownOutlined,
+  TeamOutlined,
+  PartitionOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '@/hooks/useAuth';
 
 const { Header, Sider, Content, Footer } = Layout;
 const { Text } = Typography;
 
-interface MenuItem {
-  key: string;
-  icon: React.ReactNode;
-  label: string;
-  path: string;
-}
-
-const menuItems: MenuItem[] = [
-  { key: 'portal', icon: <HomeOutlined />, label: '部门门户', path: '/portal' },
-  { key: 'workbench', icon: <DashboardOutlined />, label: '个人工作台', path: '/workbench' },
-  { key: 'projects', icon: <ProjectOutlined />, label: '项目管理', path: '/projects' },
-  { key: 'shelf', icon: <AppstoreOutlined />, label: '产品货架', path: '/shelf' },
-  { key: 'knowledge', icon: <BookOutlined />, label: '知识库', path: '/knowledge' },
-  { key: 'forum', icon: <MessageOutlined />, label: '技术论坛', path: '/forum' },
-];
+type MenuItem = Required<MenuProps>['items'][number];
 
 export function MainLayout() {
   const [collapsed, setCollapsed] = useState(false);
+  const [openKeys, setOpenKeys] = useState<string[]>(['user-management']);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -57,19 +47,12 @@ export function MainLayout() {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const handleMenuClick = (key: string) => {
-    const item = menuItems.find((i) => i.key === key);
-    if (item) {
-      navigate(item.path);
-    }
-  };
-
   const handleLogout = async () => {
     await logout();
     navigate('/login');
   };
 
-  const userMenuItems = [
+  const userDropdownItems = [
     {
       key: 'profile',
       icon: <UserOutlined />,
@@ -94,9 +77,96 @@ export function MainLayout() {
     },
   ];
 
-  const selectedKeys = menuItems
-    .filter((item) => location.pathname.startsWith(item.path))
-    .map((item) => item.key);
+  // 侧边栏菜单项
+  const getMenuItems = (): MenuItem[] => [
+    {
+      key: 'portal',
+      icon: <HomeOutlined />,
+      label: '部门门户',
+      onClick: () => navigate('/portal'),
+    },
+    {
+      key: 'workbench',
+      icon: <DashboardOutlined />,
+      label: '个人工作台',
+      onClick: () => navigate('/workbench'),
+    },
+    {
+      key: 'projects',
+      icon: <ProjectOutlined />,
+      label: '项目管理',
+      onClick: () => navigate('/projects'),
+    },
+    {
+      key: 'user-management',
+      icon: <TeamOutlined />,
+      label: '用户管理',
+      children: [
+        {
+          key: 'users',
+          icon: <TeamOutlined />,
+          label: '用户列表',
+          onClick: () => navigate('/users'),
+        },
+        {
+          key: 'organization',
+          icon: <PartitionOutlined />,
+          label: '组织架构',
+          onClick: () => navigate('/organization'),
+        },
+      ],
+    },
+    {
+      key: 'shelf',
+      icon: <AppstoreOutlined />,
+      label: '产品货架',
+      onClick: () => navigate('/shelf'),
+    },
+    {
+      key: 'knowledge',
+      icon: <BookOutlined />,
+      label: '知识库',
+      onClick: () => navigate('/knowledge'),
+    },
+    {
+      key: 'forum',
+      icon: <MessageOutlined />,
+      label: '技术论坛',
+      onClick: () => navigate('/forum'),
+    },
+  ];
+
+  // 获取当前选中的菜单项
+  const getSelectedKeys = (): string[] => {
+    const pathname = location.pathname;
+    if (pathname.startsWith('/users')) return ['users'];
+    if (pathname.startsWith('/organization')) return ['organization'];
+    if (pathname.startsWith('/projects')) return ['projects'];
+    if (pathname.startsWith('/workbench')) return ['workbench'];
+    if (pathname.startsWith('/shelf')) return ['shelf'];
+    if (pathname.startsWith('/knowledge')) return ['knowledge'];
+    if (pathname.startsWith('/forum')) return ['forum'];
+    if (pathname.startsWith('/portal')) return ['portal'];
+    return [];
+  };
+
+  // 面包屑标题映射
+  const getBreadcrumbTitle = (): string => {
+    const pathname = location.pathname;
+    if (pathname.startsWith('/users')) return '用户列表';
+    if (pathname.startsWith('/organization')) return '组织架构';
+    if (pathname.startsWith('/projects')) return '项目管理';
+    if (pathname.startsWith('/workbench')) return '个人工作台';
+    if (pathname.startsWith('/shelf')) return '产品货架';
+    if (pathname.startsWith('/knowledge')) return '知识库';
+    if (pathname.startsWith('/forum')) return '技术论坛';
+    if (pathname.startsWith('/profile')) return '个人资料';
+    if (pathname.startsWith('/settings')) return '系统设置';
+    if (pathname.startsWith('/notifications')) return '消息通知';
+    return '当前页面';
+  };
+
+  const selectedKeys = getSelectedKeys();
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -134,12 +204,9 @@ export function MainLayout() {
         <Menu
           mode="inline"
           selectedKeys={selectedKeys}
-          items={menuItems.map((item) => ({
-            key: item.key,
-            icon: item.icon,
-            label: item.label,
-          }))}
-          onClick={({ key }) => handleMenuClick(key)}
+          openKeys={collapsed ? [] : openKeys}
+          onOpenChange={setOpenKeys}
+          items={getMenuItems()}
           style={{ borderRight: 0 }}
         />
       </Sider>
@@ -167,11 +234,7 @@ export function MainLayout() {
             <Breadcrumb
               items={[
                 { title: '首页' },
-                {
-                  title:
-                    menuItems.find((i) => location.pathname.startsWith(i.path))
-                      ?.label || '当前页面',
-                },
+                { title: getBreadcrumbTitle() },
               ]}
             />
           </Space>
@@ -183,14 +246,14 @@ export function MainLayout() {
                 onClick={() => navigate('/notifications')}
               />
             </Badge>
-            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+            <Dropdown menu={{ items: userDropdownItems }} placement="bottomRight">
               <Space style={{ cursor: 'pointer' }}>
                 <Avatar
-                  src={user?.avatar_url}
-                  icon={!user?.avatar_url && <UserOutlined />}
+                  src={user?.avatar || user?.avatar_url}
+                  icon={!user?.avatar && !user?.avatar_url && <UserOutlined />}
                   size="small"
                 />
-                <Text>{user?.display_name || user?.username || '用户'}</Text>
+                <Text>{user?.display_name || user?.displayName || user?.username || '用户'}</Text>
                 <DownOutlined style={{ fontSize: 12 }} />
               </Space>
             </Dropdown>

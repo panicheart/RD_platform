@@ -3,152 +3,228 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 
-	"rdp-platform/rdp-api/handlers"
-	"rdp-platform/rdp-api/middleware"
-	"rdp-platform/rdp-api/models"
-	"rdp-platform/rdp-api/services"
+	"rdp/services/api/handlers"
+	"rdp/services/api/middleware"
+	"rdp/services/api/models"
+	"rdp/services/api/services"
 )
 
-// Router 路由管理器
+// Router manages all application routes
 type Router struct {
-	engine      *gin.Engine
-	userService *services.UserService
-	authMW      *middleware.AuthMiddleware
+	engine          *gin.Engine
+	userService     *services.UserService
+	projectService  *services.ProjectService
+	authMiddleware  *middleware.AuthMiddleware
 }
 
-// NewRouter 创建路由管理器
-func NewRouter(engine *gin.Engine, userService *services.UserService) *Router {
+// NewRouter creates a new Router
+func NewRouter(
+	engine *gin.Engine,
+	userService *services.UserService,
+	projectService *services.ProjectService,
+	authMiddleware *middleware.AuthMiddleware,
+) *Router {
 	return &Router{
-		engine:      engine,
-		userService: userService,
-		authMW:      middleware.NewAuthMiddleware(userService),
+		engine:          engine,
+		userService:     userService,
+		projectService:  projectService,
+		authMiddleware:  authMiddleware,
 	}
 }
 
-// SetupRoutes 配置所有路由
+// SetupRoutes configures all routes
 func (r *Router) SetupRoutes() {
-	// 全局中间件
+	// Global middleware
 	r.setupGlobalMiddleware()
 
-	// 健康检查（公开）
+	// Health check (public)
 	r.setupHealthRoutes()
 
-	// API v1 路由组
+	// API v1 routes
 	v1 := r.engine.Group("/api/v1")
 	{
-		// 认证路由（公开）
+		// Auth routes (public)
 		r.setupAuthRoutes(v1)
 
-		// 用户路由（需要认证）
+		// User routes (authenticated)
 		r.setupUserRoutes(v1)
 
-		// 项目路由（需要认证）
-		// TODO: 实现项目路由
-		// r.setupProjectRoutes(v1)
+		// Project routes (authenticated)
+		r.setupProjectRoutes(v1)
 	}
 }
 
-// setupGlobalMiddleware 配置全局中间件
+// setupGlobalMiddleware configures global middleware
 func (r *Router) setupGlobalMiddleware() {
-	// CORS
 	r.engine.Use(middleware.CORS())
-	// 安全头部
 	r.engine.Use(middleware.SecurityHeaders())
-	// 恢复
 	r.engine.Use(gin.Recovery())
 }
 
-// setupHealthRoutes 配置健康检查路由
+// setupHealthRoutes configures health check routes
 func (r *Router) setupHealthRoutes() {
 	healthHandler := handlers.NewHealthHandler()
 	r.engine.GET("/api/v1/health", healthHandler.HealthCheck)
 }
 
-// setupAuthRoutes 配置认证相关路由
+// setupAuthRoutes configures authentication routes
 func (r *Router) setupAuthRoutes(group *gin.RouterGroup) {
-	userHandler := handlers.NewUserHandler(r.userService)
+	userHandler := handlers.NewUserHandler(r.userService, nil)
 
 	auth := group.Group("/auth")
 	{
 		auth.POST("/login", userHandler.Login)
 		auth.POST("/refresh", userHandler.RefreshToken)
-		auth.POST("/logout", r.authMW.JWTAuth(), userHandler.Logout)
+		auth.POST("/logout", r.authMiddleware.Authenticate(), userHandler.Logout)
 	}
 }
 
-// setupUserRoutes 配置用户相关路由
+// setupUserRoutes configures user routes
 func (r *Router) setupUserRoutes(group *gin.RouterGroup) {
-	userHandler := handlers.NewUserHandler(r.userService)
+	userHandler := handlers.NewUserHandler(r.userService, nil)
 
 	users := group.Group("/users")
+	users.Use(r.authMiddleware.Authenticate())
 	{
-		// 公开/可选认证路由
-		// 获取用户列表（需要认证）
-		users.GET("", r.authMW.JWTAuth(), userHandler.GetUserList)
+		// List users
+		users.GET("", userHandler.ListUsers)
 
-		// 获取当前用户信息（需要认证）
-		users.GET("/me", r.authMW.JWTAuth(), userHandler.GetCurrentUser)
+		// Current user
+		users.GET("/me", userHandler.CurrentUser)
+		users.PUT("/me", userHandler.UpdateCurrentUser)
 
-		// 创建用户（需要管理员权限）
-		users.POST("", r.authMW.RequireAdmin(), userHandler.CreateUser)
+		// User projects
+		users.GET("/me/projects", r.projectHandler().GetUserProjects)
 
-		// 单个用户路由
+		// Create user (admin only)
+		users.POST("", r.requireRole("admin"), userHandler.CreateUser)
+
+		// Single user routes
 		user := users.Group("/:id")
 		{
-			// 获取用户详情（需要认证）
-			user.GET("", r.authMW.JWTAuth(), userHandler.GetUser)
-
-			// 获取用户Profile（需要认证）
-			user.GET("/profile", r.authMW.JWTAuth(), userHandler.GetUserProfile)
-
-			// 更新用户（需要管理员或本人）
-			user.PUT("", r.authMW.RequireAdminOrSelf(), userHandler.UpdateUser)
-
-			// 删除用户（需要管理员权限）
-			user.DELETE("", r.authMW.RequireAdmin(), userHandler.DeleteUser)
-
-			// 修改密码（需要管理员或本人）
-			user.PUT("/password", r.authMW.RequireAdminOrSelf(), userHandler.ChangePassword)
+			user.GET("", userHandler.GetUser)
+			user.PUT("", r.requireRoleOrSelf("admin"), userHandler.UpdateUser)
+			user.DELETE("", r.requireRole("admin"), userHandler.DeleteUser)
 		}
 	}
 }
 
-// SetupTestRoutes 配置测试路由（用于开发和测试）
-func (r *Router) SetupTestRoutes() {
-	// 测试端点，用于验证中间件
-	r.engine.GET("/test/auth", r.authMW.JWTAuth(), func(c *gin.Context) {
-		user, _ := middleware.GetCurrentUser(c)
-		c.JSON(200, gin.H{
-			"message":  "Authenticated",
-			"user_id":  user.UserID,
-			"username": user.Username,
-			"role":     user.Role,
-		})
-	})
+// setupProjectRoutes configures project routes
+func (r *Router) setupProjectRoutes(group *gin.RouterGroup) {
+	projectHandler := r.projectHandler()
 
-	r.engine.GET("/test/admin", r.authMW.RequireAdmin(), func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Admin only",
-		})
-	})
+	projects := group.Group("/projects")
+	projects.Use(r.authMiddleware.Authenticate())
+	{
+		// List and create projects
+		projects.GET("", projectHandler.GetProjects)
+		projects.POST("", projectHandler.CreateProject)
 
-	r.engine.GET("/test/role", r.authMW.RequireRole(models.RoleAdmin, models.RoleDeptLeader), func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Admin or DeptLeader",
-		})
-	})
+		// Project stats
+		projects.GET("/stats", projectHandler.GetProjectStats)
+
+		// Single project routes
+		project := projects.Group("/:id")
+		{
+			project.GET("", projectHandler.GetProject)
+			project.PUT("", projectHandler.UpdateProject)
+			project.DELETE("", projectHandler.DeleteProject)
+
+			// Progress
+			project.PUT("/progress", projectHandler.UpdateProgress)
+
+			// Gantt chart data
+			project.GET("/gantt", projectHandler.GetProjectGantt)
+
+			// Members
+			project.GET("/members", projectHandler.GetMembers)
+			project.POST("/members", projectHandler.AddMember)
+			project.DELETE("/members/:userId", projectHandler.RemoveMember)
+			project.PUT("/members/:userId/role", projectHandler.UpdateMemberRole)
+
+			// Activities
+			project.GET("/activities", projectHandler.GetProjectActivities)
+			project.POST("/activities", projectHandler.CreateActivity)
+		}
+	}
 }
 
-// RoleHierarchy 角色层级定义（用于权限检查）
-var RoleHierarchy = map[models.UserRole]int{
-	models.RoleOther:      0,
-	models.RoleDesigner:   1,
-	models.RoleTeamLeader: 2,
-	models.RoleDeptLeader: 3,
-	models.RoleAdmin:      4,
+// projectHandler creates a new ProjectHandler instance
+func (r *Router) projectHandler() *handlers.ProjectHandler {
+	return handlers.NewProjectHandler(r.projectService)
 }
 
-// HasMinimumRole 检查角色是否满足最低要求
-func HasMinimumRole(userRole models.UserRole, minRole models.UserRole) bool {
+// requireRole middleware requires specific role
+func (r *Router) requireRole(roles ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		role, exists := c.Get("role")
+		if !exists {
+			c.JSON(401, gin.H{"code": 401, "message": "unauthorized"})
+			c.Abort()
+			return
+		}
+
+		userRole := role.(string)
+		for _, r := range roles {
+			if string(r) == userRole {
+				c.Next()
+				return
+			}
+		}
+
+		c.JSON(403, gin.H{"code": 403, "message": "forbidden"})
+		c.Abort()
+	}
+}
+
+// requireRoleOrSelf middleware requires specific role or self
+func (r *Router) requireRoleOrSelf(roles ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID, exists := c.Get("user_id")
+		if !exists {
+			c.JSON(401, gin.H{"code": 401, "message": "unauthorized"})
+			c.Abort()
+			return
+		}
+
+		// Check if accessing self
+		paramID := c.Param("id")
+		if userID == paramID {
+			c.Next()
+			return
+		}
+
+		// Check role
+		role, exists := c.Get("role")
+		if !exists {
+			c.JSON(401, gin.H{"code": 401, "message": "unauthorized"})
+			c.Abort()
+			return
+		}
+
+		userRole := role.(string)
+		for _, r := range roles {
+			if string(r) == userRole {
+				c.Next()
+				return
+			}
+		}
+
+		c.JSON(403, gin.H{"code": 403, "message": "forbidden"})
+		c.Abort()
+	}
+}
+
+// RoleHierarchy defines role hierarchy for permission checking
+var RoleHierarchy = map[string]int{
+	"other":       0,
+	"designer":    1,
+	"team_leader": 2,
+	"dept_leader": 3,
+	"admin":       4,
+}
+
+// HasMinimumRole checks if user has minimum required role
+func HasMinimumRole(userRole string, minRole string) bool {
 	return RoleHierarchy[userRole] >= RoleHierarchy[minRole]
 }

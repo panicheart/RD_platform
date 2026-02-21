@@ -75,13 +75,42 @@ docker-build:
 deploy:
 	cd deploy/scripts && sudo ./install.sh
 
+# =============================================================================
+# Database Commands
+# =============================================================================
+
+# PostgreSQL connection settings (can be overridden)
+DB_HOST ?= localhost
+DB_PORT ?= 5432
+DB_NAME ?= rdp
+DB_USER ?= rdp_user
+DB_PASSWORD ?= rdp_secret_2026
+PSQL = PGPASSWORD=$(DB_PASSWORD) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(DB_NAME)
+PSQL_ADMIN = sudo -u postgres psql -d $(DB_NAME)
+
+db-init:
+	@echo "🚀 Initializing RDP database..."
+	bash deploy/scripts/init-db.sh
+
 db-migrate:
-	@echo "Run database migrations"
-	@echo "TODO: implement migration command"
+	@echo "🔄 Running database migrations..."
+	$(PSQL_ADMIN) -f database/migrations/000_init_extensions.sql
+	$(PSQL_ADMIN) -f database/init.sql
 
 db-seed:
-	@echo "Run database seeds"
-	@echo "TODO: implement seed command"
+	@echo "🌱 Running database seeds..."
+	$(PSQL_ADMIN) -f database/seeds/001_initial_data.sql
+
+db-drop:
+	@echo "⚠️  Dropping database '$(DB_NAME)'..."
+	@echo "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
+	sudo -u postgres psql -c "DROP DATABASE IF EXISTS $(DB_NAME);"
+
+db-reset:
+	@echo "🔄 Resetting database (drop + init + migrate + seed)..."
+	make db-drop && make db-init
+
+.PHONY: db-init db-migrate db-seed db-drop db-reset
 
 # =============================================================================
 # 5-Agent Team 管理命令
