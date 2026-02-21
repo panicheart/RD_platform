@@ -1,0 +1,43 @@
+{
+  "mcpServers": {
+    "rdp-task-coordinator": {
+      "command": "python3",
+      "args": ["${workspaceFolder}/agents/mcp/task_coordinator.py"],
+      "env": {
+        "RDP_PROJECT_ROOT": "${workspaceFolder}",
+        "DB_PATH": "${workspaceFolder}/agents/data/tasks.db",
+        "LOG_LEVEL": "INFO"
+      },
+      "description": "RDP任务协调器 - 管理5个Agent的任务状态、依赖关系和进度同步"
+    },
+    "rdp-code-validator": {
+      "command": "python3",
+      "args": ["${workspaceFolder}/agents/mcp/code_validator.py"],
+      "env": {
+        "GOLANGCI_LINT_PATH": "services/api",
+        "ESLINT_PATH": "apps/web",
+        "TYPESCRIPT_PATH": "apps/web"
+      },
+      "description": "代码验证服务 - 自动检查Go和TypeScript代码规范"
+    },
+    "rdp-git-sync": {
+      "command": "python3",
+      "args": ["${workspaceFolder}/agents/mcp/git_sync.py"],
+      "env": {
+        "GIT_STRATEGY": "feature-branch",
+        "MAIN_BRANCH": "main",
+        "AUTO_MERGE": "false"
+      },
+      "description": "Git同步服务 - 管理5个Agent的代码分支和合并"
+    },
+    "rdp-integration-manager": {
+      "command": "python3",
+      "args": ["${workspaceFolder}/agents/mcp/integration_manager.py"],
+      "env": {
+        "INTEGRATION_STRATEGY": "feature-branch",
+        "CONFLICT_RESOLUTION": "manual"
+      },
+      "description": "整合管理服务 - 自动合并5个Agent的代码并检测冲突"
+    }
+  }
+}

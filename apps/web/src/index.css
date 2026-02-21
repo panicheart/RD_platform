@@ -5,117 +5,17 @@
 }
 
 html,
-body,
-#root {
-  height: 100%;
-  width: 100%;
-}
-
 body {
+  width: 100%;
+  height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
     'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom theme colors */
-:root {
-  --primary-color: #1890ff;
-  --success-color: #52c41a;
-  --warning-color: #faad14;
-  --error-color: #f5222d;
-  --info-color: #1890ff;
-}
-
-/* Layout */
-.main-layout {
-  min-height: 100vh;
-}
-
-.main-header {
-  background: #fff;
-  padding: 0 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.main-content {
-  padding: 24px;
-  min-height: calc(100vh - 64px);
-}
-
-/* Page styles */
-.page-header {
-  margin-bottom: 24px;
-}
-
-.page-header h1 {
-  font-size: 20px;
-  font-weight: 500;
-}
-
-/* Card styles */
-.stat-card {
+#root {
+  width: 100%;
   height: 100%;
-}
-
-.stat-card .ant-statistic-title {
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.45);
-}
-
-.stat-card .ant-statistic-content {
-  font-size: 24px;
-}
-
-/* Table styles */
-.table-actions {
-  display: flex;
-  gap: 8px;
-}
-
-/* Portal styles */
-.portal-banner {
-  background: linear-gradient(135deg, #1890ff 0%, #40a9ff 100%);
-  color: white;
-  padding: 48px;
-  border-radius: 8px;
-  margin-bottom: 24px;
-}
-
-.portal-banner h1 {
-  font-size: 32px;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.portal-banner p {
-  font-size: 16px;
-  opacity: 0.9;
-}
-
-/* Workbench styles */
-.workbench-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
-}
-
-/* Animation */
-.fade-enter {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.fade-enter-active {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 300ms, transform 300ms;
-}
-
-.fade-exit {
-  opacity: 1;
-}
-
-.fade-exit-active {
-  opacity: 0;
-  transition: opacity 300ms;
 }

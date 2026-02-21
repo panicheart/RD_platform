@@ -1,82 +1,26 @@
 #!/bin/bash
 
-# =====================================================
-# RDP Platform Backup Script
-# Version: 1.0
-# Date: 2026-02-22
-# =====================================================
-
-set -e
-
-# Configuration
 RDP_DIR="/opt/rdp"
-BACKUP_DIR="/opt/rdp/backups"
-DATE=$(date +%Y%m%d_%H%M%S)
-DB_NAME="rdp"
-DB_USER="rdp_user"
+BACKUP_DIR="/opt/rdp/backup"
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+BACKUP_FILE="${BACKUP_DIR}/rdp_backup_${TIMESTAMP}.tar.gz"
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-NC='\033[0m'
+mkdir -p $BACKUP_DIR
 
-log_info() {
-    echo -e "[INFO] $1"
-}
+echo "Creating backup..."
 
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
+pg_dump -U rdp -h localhost rdp > "${BACKUP_DIR}/db_${TIMESTAMP}.sql"
 
-# Create backup directory
-mkdir -p "$BACKUP_DIR"
+tar -czf $BACKUP_FILE \
+    -C $RDP_DIR \
+    --exclude='backup' \
+    --exclude='logs' \
+    --exclude='*.log' \
+    .
 
-log_info "Starting backup..."
+echo "Backup created: $BACKUP_FILE"
 
-# Backup PostgreSQL database
-log_info "Backing up PostgreSQL database..."
-pg_dump -U "$DB_USER" -d "$DB_NAME" -F c -b -v -f "$BACKUP_DIR/db_$DATE.dump"
+find $BACKUP_DIR -name "rdp_backup_*.tar.gz" -mtime +7 -delete
+find $BACKUP_DIR -name "db_*.sql" -mtime +7 -delete
 
-# Backup configuration files
-log_info "Backing up configuration files..."
-tar -czf "$BACKUP_DIR/config_$DATE.tar.gz" -C "$RDP_DIR" config/
-
-# Backup uploaded files
-log_info "Backing up files..."
-tar -czf "$BACKUP_DIR/files_$DATE.tar.gz" -C "$RDP_DIR" data/files/
-
-# Backup logs
-log_info "Backing up logs..."
-tar -czf "$BACKUP_DIR/logs_$DATE.tar.gz" -C "$RDP_DIR" logs/
-
-# Create backup manifest
-cat > "$BACKUP_DIR/manifest_$DATE.txt" << EOF
-RDP Platform Backup Manifest
-===========================
-Date: $DATE
-Hostname: $(hostname)
-
-Backup Contents:
-- db_$DATE.dump (PostgreSQL database)
-- config_$DATE.tar.gz (Configuration files)
-- files_$DATE.tar.gz (Uploaded files)
-- logs_$DATE.tar.gz (Log files)
-
-Database: $DB_NAME
-EOF
-
-# Cleanup old backups (keep last 7 days)
-log_info "Cleaning up old backups..."
-find "$BACKUP_DIR" -name "db_*.dump" -mtime +7 -delete
-find "$BACKUP_DIR" -name "config_*.tar.gz" -mtime +7 -delete
-find "$BACKUP_DIR" -name "files_*.tar.gz" -mtime +7 -delete
-find "$BACKUP_DIR" -name "logs_*.tar.gz" -mtime +7 -delete
-
-# Create latest symlinks
-ln -sf "$BACKUP_DIR/db_$DATE.dump" "$BACKUP_DIR/db_latest.dump"
-ln -sf "$BACKUP_DIR/config_$DATE.tar.gz" "$BACKUP_DIR/config_latest.tar.gz"
-
-echo ""
-echo -e "${GREEN}Backup completed successfully!${NC}"
-echo "Backup location: $BACKUP_DIR"
-echo "Backup date: $DATE"
+echo "Old backups cleaned (keeping last 7 days)"

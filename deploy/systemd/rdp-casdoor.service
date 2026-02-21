@@ -1,38 +1,24 @@
 [Unit]
-Description=RDP Casdoor Identity Provider
+Description=RDP Casdoor Service
 Documentation=https://github.com/casdoor/casdoor
 After=network.target postgresql.service
 Wants=postgresql.service
-PartOf=rdp.target
 
 [Service]
 Type=simple
 User=rdp
 Group=rdp
-WorkingDirectory=/opt/rdp/casdoor
-ExecStart=/opt/rdp/bin/casdoor -conf /opt/rdp/config/casdoor.conf
-Restart=always
-RestartSec=5
+WorkingDirectory=/opt/casdoor
+ExecStart=/opt/casdoor/casdoor
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5s
 
-# Environment
-Environment="RDP_ENV=production"
-
-# Resource limits
 LimitNOFILE=65536
-MemoryMax=1G
-CPUQuota=150%
 
-# Security
-NoNewPrivileges=true
-PrivateTmp=true
-ProtectSystem=strict
-ProtectHome=true
-ReadWritePaths=/opt/rdp/casdoor/data /opt/rdp/casdoor/logs
-
-# Logging
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=rdp-casdoor
 
 [Install]
-WantedBy=rdp.target
+WantedBy=multi-user.target
