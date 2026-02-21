@@ -295,10 +295,10 @@ Agent A vs Agent B 意见不一致
 | **后端API** | Go (Gin framework) | Go 1.22+, Gin 1.9+ | [MUST] 纯 Go 技术栈 |
 | **数据库** | PostgreSQL | 16.x | [MUST] 系统包安装 |
 | **缓存** | Redis | 7.x | [SHOULD] Phase 2 |
-| **搜索** | PostgreSQL全文搜索(早期) / MeiliSearch(后期) | — | [MUST] P1用PG, P3用Meili |
+| **搜索** | PostgreSQL全文搜索(早期) / MeiliSearch(后期) | MeiliSearch 1.x | [MUST] P1用PG, P3用Meili |
 | **Git服务** | Gitea | 1.22+ | [MUST] Phase 2 |
 | **认证** | Casdoor | Latest | [MUST] Phase 1 |
-| **IM** | 内置通知(早期) / Mattermost(后期) | — | [SHOULD] P1内置, P3外接 |
+| **IM** | 内置通知(早期) / Mattermost(后期) | Team Edition | [SHOULD] P1内置, P3外接 |
 | **存储** | 本地文件系统 | — | [MUST] |
 | **服务管理** | systemd | — | [MUST] 裸机部署 |
 
