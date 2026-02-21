@@ -42,10 +42,27 @@ format: format-frontend format-backend
 test-frontend:
 	cd apps/web && npm run test
 
+test-frontend-watch:
+	cd apps/web && npm run test -- --watch
+
+test-frontend-coverage:
+	cd apps/web && npm run test:coverage
+
+test-frontend-ui:
+	cd apps/web && npm run test:ui
+
 test-backend:
 	cd services/api && go test -v ./...
 
+test-backend-coverage:
+	cd services/api && go test -coverprofile=coverage.out ./... && go tool cover -func=coverage.out
+
+test-backend-coverage-html:
+	cd services/api && go test -coverprofile=coverage.out ./... && go tool cover -html=coverage.out -o coverage.html
+
 test: test-backend test-frontend
+
+test-coverage: test-backend-coverage test-frontend-coverage
 
 clean:
 	rm -rf apps/web/dist apps/web/node_modules
