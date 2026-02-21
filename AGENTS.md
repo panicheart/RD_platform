@@ -106,6 +106,9 @@ RD_platform/
 | **InfraAgent** | 基础设施 | 部署脚本、配置管理、监控告警 | Shell + systemd |
 | **DesktopAgent** | 桌面辅助程序 | rdp协议注册、Git自动提交、冲突处理 | Tauri |
 | **AnalyticsAgent** | 数据分析 | 仪表盘、报表服务 | Go + ECharts |
+| **SecurityAgent** | 安全合规 | 数据分级、导出审批、屏幕水印、会话控制、审计日志 | Go + 安全策略引擎 |
+| **MonitorAgent** | 运维监控 | 系统监控、APM性能监控、日志集中、告警机制 | Go + Prometheus/Grafana |
+| **QMAgent** | 质量管理 | 需求管理、变更管理(ECO/ECR)、缺陷管理、测试管理 | Go + 工作流引擎 |
 
 ### 2.3 人类监督者（你）的角色
 
