@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "rdp-task-coordinator": {
+      "command": "python3",
+      "args": ["${workspaceFolder}/agents/mcp/task_coordinator.py"],
+      "env": {
+        "RDP_PROJECT_ROOT": "${workspaceFolder}",
+        "DB_PATH": "${workspaceFolder}/agents/data/tasks.db"
+      },
+      "description": "RDP任务协调器 - 管理所有Agent任务状态和通信"
+    },
+    "rdp-code-validator": {
+      "command": "bash",
+      "args": ["-c", "cd ${workspaceFolder} && make lint"],
+      "description": "代码验证服务 - 运行ESLint和golangci-lint"
+    },
+    "rdp-test-runner": {
+      "command": "bash", 
+      "args": ["-c", "cd ${workspaceFolder} && make test"],
+      "description": "测试运行服务 - 执行前端和后端测试"
+    }
+  }
+}
