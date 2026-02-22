@@ -12,7 +12,7 @@
 -- Insert root department
 INSERT INTO organizations (id, name, code, level, sort_order, description, is_active)
 VALUES 
-    ('01ORG000000000000000000001', '微波研发部门', 'RD_DEPT', 1, 1, '微波工程部研发管理部门', true)
+    ('01ORG000000000000000000001', '微波室', 'RD_DEPT', 1, 1, '微波室研发管理部门', true)
 ON CONFLICT (code) DO NOTHING;
 
 -- Insert sub-departments
@@ -267,7 +267,7 @@ INSERT INTO announcements (id, title, content, author_id, priority, is_pinned, p
 VALUES (
     uuid_generate_v4(),
     '🎉 RDP系统正式上线',
-    '欢迎使用微波工程部研发管理平台！本系统支持项目管理、流程执行、文档协作等功能。如有问题请联系系统管理员。',
+    '欢迎使用微波室研发管理平台！本系统支持项目管理、流程执行、文档协作等功能。如有问题请联系系统管理员。',
     '01USER00000000000000000001',
     'high',
     true,

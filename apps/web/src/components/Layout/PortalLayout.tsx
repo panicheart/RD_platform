@@ -118,7 +118,7 @@ export function PortalLayout() {
               <span style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>M</span>
             </div>
             <Title level={4} style={{ margin: '0 0 0 12px', color: '#1890ff' }}>
-              微波工程部研发管理平台
+              微波室研发管理平台
             </Title>
           </div>
         </Space>
@@ -195,7 +195,7 @@ export function PortalLayout() {
         >
           <div>
             <Title level={4} style={{ color: '#fff', marginBottom: 16 }}>
-              微波工程部研发管理平台
+              微波室研发管理平台
             </Title>
             <Text style={{ color: 'rgba(255,255,255,0.65)' }}>
               统筹项目全生命周期 · 沉淀技术资产 · 系统化知识管理
@@ -203,7 +203,7 @@ export function PortalLayout() {
           </div>
           <div style={{ textAlign: 'right' }}>
             <Text style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12 }}>
-              © 2026 微波工程部 版权所有
+              © 2026 微波室 版权所有
             </Text>
             <br />
             <Text style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12 }}>

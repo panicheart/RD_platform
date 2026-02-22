@@ -103,7 +103,7 @@ export default function LoginPage() {
             <SafetyOutlined style={{ color: 'white', fontSize: 28 }} />
           </div>
           <Title level={3} style={{ marginBottom: 4 }}>
-            微波工程部研发管理平台
+            微波室研发管理平台
           </Title>
           <Text type="secondary" style={{ fontSize: 13 }}>Microwave R&D Management Platform</Text>
         </div>

@@ -41,14 +41,14 @@ export default function PortalFooter() {
           <Col xs={24} md={8}>
             <Title level={5} style={{ color: 'white', marginBottom: '16px' }}>联系方式</Title>
             <Text style={{ color: 'rgba(255,255,255,0.6)' }}>
-              航天科工集团 · 微波工程部<br />
+              航天科工集团 · 微波室<br />
               internal@microwave.rd
             </Text>
           </Col>
         </Row>
         <div className={styles.footerDivider}>
           <Text style={{ color: 'rgba(255,255,255,0.4)' }}>
-            © 2026 微波工程部 | 内部系统
+            © 2026 微波室 | 内部系统
           </Text>
         </div>
       </div>

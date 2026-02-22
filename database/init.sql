@@ -431,7 +431,7 @@ CREATE INDEX idx_honors_active ON honors(is_active);
 -- =====================================================
 
 INSERT INTO organizations (id, name, code, level, sort_order) VALUES 
-    (uuid_generate_v4(), '微波研发部门', 'RD_DEPT', 1, 1),
+    (uuid_generate_v4(), '微波室', 'RD_DEPT', 1, 1),
     (uuid_generate_v4(), '产品管理组', 'PRODUCT_MGMT', 2, 1),
     (uuid_generate_v4(), '产品开发组', 'PRODUCT_DEV', 2, 2),
     (uuid_generate_v4(), '技术开发组', 'TECH_DEV', 2, 3),

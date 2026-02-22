@@ -69,7 +69,7 @@ export default function Login() {
       >
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <Title level={3} style={{ marginBottom: 8 }}>
-            微波工程部研发管理平台
+            微波室研发管理平台
           </Title>
           <Text type="secondary">Microwave R&D Management Platform</Text>
         </div>

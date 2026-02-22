@@ -273,7 +273,7 @@ export function MainLayout() {
         </Content>
         <Footer style={{ textAlign: 'center', padding: '12px 50px' }}>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            微波工程部研发管理平台 (RDP) ©2026 版权所有
+            微波室研发管理平台 (RDP) ©2026 版权所有
           </Text>
         </Footer>
       </Layout>
