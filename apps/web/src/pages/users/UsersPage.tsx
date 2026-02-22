@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Table, Button, Space, Tag, Input, Select, Card, Modal, Form, Avatar, Typography, message } from 'antd'
 import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined, UserOutlined } from '@ant-design/icons'
 import { api, ApiResponse, PaginatedResponse, getErrorMessage } from '@/utils/api'
@@ -37,6 +37,15 @@ const teamOptions = [
   { value: '测试', label: '测试' },
 ]
 
+interface CreateUserValues {
+  username: string
+  display_name: string
+  email?: string
+  phone?: string
+  role: string
+  team?: string
+}
+
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(false)
@@ -45,11 +54,7 @@ export default function UsersPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [form] = Form.useForm()
 
-  useEffect(() => {
-    fetchUsers()
-  }, [pagination.page])
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -59,7 +64,7 @@ export default function UsersPage() {
       if (filters.role) params.append('role', filters.role)
       if (filters.team) params.append('team', filters.team)
 
-      const response = await api.get<ApiResponse<PaginatedResponse<User>>>(`/users?${params}`)
+      const response = await api.get<ApiResponse<PaginatedResponse<User>>>(`/users?${params.toString()}`)
       setUsers(response.data.data?.items || [])
       setPagination(prev => ({ ...prev, total: response.data.data?.total || 0 }))
     } catch (error) {
@@ -67,9 +72,13 @@ export default function UsersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [pagination.page, pagination.pageSize, filters])
 
-  const handleCreate = async (values: any) => {
+  useEffect(() => {
+    fetchUsers()
+  }, [fetchUsers])
+
+  const handleCreate = async (values: CreateUserValues) => {
     try {
       await api.post('/users', values)
       message.success('用户创建成功')
@@ -115,7 +124,7 @@ export default function UsersPage() {
     {
       title: '用户',
       key: 'user',
-      render: (_: any, record: User) => (
+      render: (_: unknown, record: User) => (
         <Space>
           <Avatar src={record.avatar_url} icon={<UserOutlined />} />
           <div>
@@ -166,7 +175,7 @@ export default function UsersPage() {
       title: '操作',
       key: 'action',
       width: 120,
-      render: (_: any, record: User) => (
+      render: (_: unknown, record: User) => (
         <Space>
           <Button type="link" size="small" icon={<EditOutlined />}>
             编辑

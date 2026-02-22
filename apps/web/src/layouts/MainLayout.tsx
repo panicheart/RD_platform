@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { Layout, Menu, Avatar, Dropdown, Badge, Space, theme } from 'antd'
+import { Layout, Menu, Avatar, Dropdown, Badge, Space, Breadcrumb, theme } from 'antd'
 import {
   HomeOutlined,
   ProjectOutlined,
@@ -38,12 +38,45 @@ const menuItems = [
   },
 ]
 
+const breadcrumbNameMap: Record<string, string> = {
+  '/workbench': '个人工作台',
+  '/projects': '项目管理',
+  '/users': '用户管理',
+  '/portal': '门户首页',
+}
+
 export default function MainLayout() {
   const [collapsed, setCollapsed] = useState(false)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const { token } = theme.useToken()
+
+  const breadcrumbItems = useMemo(() => {
+    const pathSnippets = location.pathname.split('/').filter((i) => i)
+    const items = [
+      {
+        title: <a onClick={() => navigate('/workbench')}>首页</a>,
+      },
+    ]
+
+    pathSnippets.forEach((_, index) => {
+      const url = `/${pathSnippets.slice(0, index + 1).join('/')}`
+      const name = breadcrumbNameMap[url]
+      if (name) {
+        items.push({
+          title: index === pathSnippets.length - 1
+            ? <span>{name}</span>
+            : <a onClick={() => navigate(url)}>{name}</a>,
+        })
+      } else if (index > 0) {
+        // For dynamic routes like /projects/:id, show "详情"
+        items.push({ title: <span>详情</span> })
+      }
+    })
+
+    return items
+  }, [location.pathname, navigate])
 
   const handleMenuClick = (key: string) => {
     navigate(key)
@@ -53,6 +86,12 @@ export default function MainLayout() {
     await logout()
     navigate('/login')
   }
+
+  const selectedKeys = useMemo(() => {
+    // Match the first-level path for menu highlighting
+    const match = location.pathname.match(/^\/[^/]+/)
+    return match ? [match[0]] : []
+  }, [location.pathname])
 
   const userMenuItems = [
     {
@@ -92,6 +131,7 @@ export default function MainLayout() {
           top: 0,
           bottom: 0,
           zIndex: 100,
+          borderRight: `1px solid ${token.colorBorderSecondary}`,
         }}
       >
         <div
@@ -100,22 +140,41 @@ export default function MainLayout() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            borderBottom: `1px solid ${token.colorBorder}`,
+            borderBottom: `1px solid ${token.colorBorderSecondary}`,
           }}
         >
           {collapsed ? (
-            <span style={{ fontSize: 20, fontWeight: 600, color: token.colorPrimary }}>
-              RDP
-            </span>
+            <div style={{
+              width: 36,
+              height: 36,
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <span style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>M</span>
+            </div>
           ) : (
-            <span style={{ fontSize: 18, fontWeight: 600 }}>
-              研发管理平台
-            </span>
+            <Space>
+              <div style={{
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <span style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>M</span>
+              </div>
+              <span style={{ fontSize: 16, fontWeight: 600 }}>研发管理平台</span>
+            </Space>
           )}
         </div>
         <Menu
           mode="inline"
-          selectedKeys={[location.pathname]}
+          selectedKeys={selectedKeys}
           items={menuItems}
           onClick={({ key }) => handleMenuClick(key)}
           style={{ borderRight: 0 }}
@@ -134,9 +193,10 @@ export default function MainLayout() {
             top: 0,
             zIndex: 99,
             width: '100%',
+            borderBottom: `1px solid ${token.colorBorderSecondary}`,
           }}
         >
-          <div />
+          <Breadcrumb items={breadcrumbItems} />
           <Space size="middle">
             <Badge count={3} size="small">
               <BellOutlined style={{ fontSize: 18, cursor: 'pointer' }} />

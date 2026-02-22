@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Card, Descriptions, Button, Space, Tag, Progress, Row, Col, Table, Avatar, List, Typography, Spin, message, Tabs } from 'antd'
 import { EditOutlined, ArrowLeftOutlined, UserOutlined, CalendarOutlined, FlagOutlined } from '@ant-design/icons'
@@ -71,14 +71,7 @@ export default function ProjectDetailPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
 
-  useEffect(() => {
-    if (id) {
-      fetchProject()
-      fetchActivities()
-    }
-  }, [id])
-
-  const fetchProject = async () => {
+  const fetchProject = useCallback(async () => {
     try {
       const response = await api.get<ApiResponse<Project>>(`/projects/${id}`)
       setProject(response.data.data)
@@ -87,16 +80,23 @@ export default function ProjectDetailPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [id])
 
-  const fetchActivities = async () => {
+  const fetchActivities = useCallback(async () => {
     try {
       const response = await api.get<ApiResponse<Activity[]>>(`/projects/${id}/activities`)
       setActivities(response.data.data || [])
     } catch (error) {
       console.error('Failed to fetch activities:', error)
     }
-  }
+  }, [id])
+
+  useEffect(() => {
+    if (id) {
+      fetchProject()
+      fetchActivities()
+    }
+  }, [id, fetchProject, fetchActivities])
 
   const getStatusConfig = (status: string) => statusMap[status] || { label: status, color: 'default' }
 
@@ -248,8 +248,8 @@ export default function ProjectDetailPage() {
                       key: 'progress',
                       render: (progress: number) => <Progress percent={progress} size="small" />
                     },
-                    { title: '开始日期', dataIndex: 'start_date', key: 'start_date', render: (d) => d || '-' },
-                    { title: '结束日期', dataIndex: 'end_date', key: 'end_date', render: (d) => d || '-' },
+                    { title: '开始日期', dataIndex: 'start_date', key: 'start_date', render: (d: string) => d || '-' },
+                    { title: '结束日期', dataIndex: 'end_date', key: 'end_date', render: (d: string) => d || '-' },
                   ]}
                   locale={{ emptyText: '暂无活动' }}
                 />

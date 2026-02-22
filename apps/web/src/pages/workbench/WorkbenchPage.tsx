@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Row, Col, Card, List, Avatar, Tag, Badge, Button, Space, Typography, Progress, Empty } from 'antd'
+import { Row, Col, Card, List, Avatar, Tag, Badge, Button, Space, Typography, Progress, Empty, Skeleton } from 'antd'
 import {
   ProjectOutlined,
   FileTextOutlined,
@@ -10,6 +10,7 @@ import {
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { api, ApiResponse, PaginatedResponse } from '@/utils/api'
+import dayjs from 'dayjs'
 
 const { Title, Text } = Typography
 
@@ -99,8 +100,29 @@ export default function WorkbenchPage() {
   }
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('zh-CN')
+    return dayjs(dateStr).format('YYYY-MM-DD')
+  }
+
+  if (loading) {
+    return (
+      <div>
+        <div className="page-header">
+          <Title level={2}>个人工作台</Title>
+          <Text type="secondary">欢迎回来，这里是您的工作概览</Text>
+        </div>
+        <Row gutter={16} style={{ marginBottom: 24 }}>
+          {[1, 2, 3].map((i) => (
+            <Col span={8} key={i}>
+              <Card><Skeleton active avatar paragraph={{ rows: 1 }} /></Card>
+            </Col>
+          ))}
+        </Row>
+        <Row gutter={24}>
+          <Col span={12}><Card><Skeleton active paragraph={{ rows: 5 }} /></Card></Col>
+          <Col span={12}><Card><Skeleton active paragraph={{ rows: 5 }} /></Card></Col>
+        </Row>
+      </div>
+    )
   }
 
   return (
@@ -112,7 +134,13 @@ export default function WorkbenchPage() {
 
       <Row gutter={16} style={{ marginBottom: 24 }}>
         <Col span={8}>
-          <Card hoverable onClick={() => navigate('/projects')}>
+          <Card
+            hoverable
+            onClick={() => navigate('/projects')}
+            style={{ transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'pointer' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
+          >
             <Card.Meta
               avatar={<Avatar size={48} icon={<ProjectOutlined />} style={{ backgroundColor: '#1890ff' }} />}
               title="我的项目"
@@ -121,7 +149,12 @@ export default function WorkbenchPage() {
           </Card>
         </Col>
         <Col span={8}>
-          <Card hoverable>
+          <Card
+            hoverable
+            style={{ transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'pointer' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
+          >
             <Card.Meta
               avatar={<Avatar size={48} icon={<ClockCircleOutlined />} style={{ backgroundColor: '#faad14' }} />}
               title="待办任务"
@@ -130,7 +163,12 @@ export default function WorkbenchPage() {
           </Card>
         </Col>
         <Col span={8}>
-          <Card hoverable>
+          <Card
+            hoverable
+            style={{ transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'pointer' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
+          >
             <Card.Meta
               avatar={<Badge count={stats.notificationsCount} size="small">
                 <Avatar size={48} icon={<FileTextOutlined />} style={{ backgroundColor: '#52c41a' }} />
@@ -159,8 +197,10 @@ export default function WorkbenchPage() {
                 dataSource={projects.slice(0, 5)}
                 renderItem={(item) => (
                   <List.Item
+                    key={item.id}
                     actions={[
                       <Button
+                        key="view"
                         type="link"
                         onClick={() => navigate(`/projects/${item.id}`)}
                       >
@@ -212,8 +252,9 @@ export default function WorkbenchPage() {
                 dataSource={activities.slice(0, 5)}
                 renderItem={(item) => (
                   <List.Item
+                    key={item.id}
                     actions={[
-                      <Button type="link" size="small">
+                      <Button key="start" type="link" size="small">
                         开始
                       </Button>,
                     ]}
@@ -255,7 +296,7 @@ export default function WorkbenchPage() {
             loading={loading}
             dataSource={notifications}
             renderItem={(item) => (
-              <List.Item>
+              <List.Item key={item.id}>
                 <List.Item.Meta
                   avatar={
                     <Badge dot={!item.is_read}>

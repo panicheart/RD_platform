@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Table, Button, Space, Tag, Input, Select, Card, Modal, Form, DatePicker, Progress, Typography, message } from 'antd'
 import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
@@ -25,6 +25,14 @@ interface Project {
   created_at: string
 }
 
+interface CreateProjectValues {
+  code: string
+  name: string
+  description?: string
+  category: string
+  dates?: [dayjs.Dayjs, dayjs.Dayjs]
+}
+
 const categoryOptions = [
   { value: 'product', label: '产品开发' },
   { value: 'research', label: '技术研究' },
@@ -49,11 +57,7 @@ export default function ProjectsPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [form] = Form.useForm()
 
-  useEffect(() => {
-    fetchProjects()
-  }, [pagination.page, filters])
-
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -63,7 +67,7 @@ export default function ProjectsPage() {
       if (filters.status) params.append('status', filters.status)
       if (filters.category) params.append('category', filters.category)
 
-      const response = await api.get<ApiResponse<PaginatedResponse<Project>>>(`/projects?${params}`)
+      const response = await api.get<ApiResponse<PaginatedResponse<Project>>>(`/projects?${params.toString()}`)
       setProjects(response.data.data?.items || [])
       setPagination(prev => ({ ...prev, total: response.data.data?.total || 0 }))
     } catch (error) {
@@ -71,9 +75,13 @@ export default function ProjectsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [pagination.page, pagination.pageSize, filters])
 
-  const handleCreate = async (values: any) => {
+  useEffect(() => {
+    fetchProjects()
+  }, [fetchProjects])
+
+  const handleCreate = async (values: CreateProjectValues) => {
     try {
       const data = {
         ...values,
@@ -160,7 +168,7 @@ export default function ProjectsPage() {
       dataIndex: 'start_date',
       key: 'dates',
       width: 180,
-      render: (_: any, record: Project) => {
+      render: (_: unknown, record: Project) => {
         if (!record.start_date) return '-'
         const start = dayjs(record.start_date).format('YYYY-MM-DD')
         const end = record.end_date ? dayjs(record.end_date).format('YYYY-MM-DD') : '进行中'
@@ -171,7 +179,7 @@ export default function ProjectsPage() {
       title: '操作',
       key: 'action',
       width: 150,
-      render: (_: any, record: Project) => (
+      render: (_: unknown, record: Project) => (
         <Space>
           <Button
             type="link"
