@@ -3,8 +3,13 @@
 > 微波系统研发部门的企业级综合管理平台
 
 [![License](https://img.shields.io/badge/license-Internal-blue.svg)]()
-[![Version](https://img.shields.io/badge/version-V1.0-green.svg)]()
+[![Version](https://img.shields.io/badge/version-V1.2-green.svg)]()
 [![Platform](https://img.shields.io/badge/platform-Offline_LAN-orange.svg)]()
+[![Phase2](https://img.shields.io/badge/Phase%202-核心功能完成-brightgreen.svg)]()
+
+> 🎉 **Phase 2 核心功能已完成** - 包含工作流引擎、产品货架、质量管理、Gitea集成
+>
+> 📄 [查看 Phase 2 完成报告](agents/outputs/phase2/COMPLETION_REPORT.md)
 
 ---
 
@@ -96,12 +101,15 @@ RD_platform/
  [x] 数据库 (InfraAgent) - PostgreSQL schema
  [x] 部署配置 (InfraAgent) - systemd、Nginx、脚本
 
-### Phase 2: 核心业务
-- [ ] 流程引擎 (WorkflowAgent)
-- [ ] 项目开发 (DevAgent)
-- [ ] 产品/技术货架 (ShelfAgent)
-- [ ] 桌面辅助程序 (DesktopAgent)
-- [ ] 质量管理 (QMAgent)
+### Phase 2: 核心业务 - ✅ 核心功能完成
+- [x] 流程引擎 (WorkflowAgent) - 状态机、活动流转、DCP评审
+- [ ] 项目开发 (DevAgent) - 流程视图、rdp协议、活动面板
+- [x] 产品/技术货架 (ShelfAgent) - 产品模型、TRL等级、购物车
+- [ ] 桌面辅助程序 (DesktopAgent) - Tauri桌面端、协议注册
+- [x] 质量管理 (QMAgent) - 需求管理、ECR/ECO、缺陷跟踪
+- [x] Gitea集成 (ProjectAgent) - Git仓库、版本管理、甘特图
+
+**Phase 2完成报告**: [agents/outputs/phase2/COMPLETION_REPORT.md](agents/outputs/phase2/COMPLETION_REPORT.md)
 
 ### Phase 3: 知识智能
 - [ ] 知识库 (KnowledgeAgent)
@@ -153,20 +161,23 @@ sudo systemctl start rdp-casdoor
 
 ## 功能模块
 
-| 模块 | 说明 | 状态 |
-|------|------|------|
-| 门户首页 | 部门简介、新闻公告、荣誉展示 | Phase 1 |
-| 个人工作台 | 待办事项、我的项目、消息通知 | Phase 1 |
-| 用户管理 | 认证授权、RBAC权限、组织架构 | Phase 1 |
-| 项目管理 | 项目创建、甘特图、文件管理 | Phase 1/2 |
-| 流程引擎 | 状态机、活动流转、DCP评审 | Phase 2 |
-| 产品货架 | 产品浏览、选用购物车、版本管理 | Phase 2 |
-| 技术货架 | 技术树、TRL等级、fork创建 | Phase 2 |
-| 知识库 | 分类管理、Obsidian同步、Zotero集成 | Phase 3 |
-| 全文搜索 | 中文分词、跨模块搜索、结果高亮 | Phase 3 |
-| 技术论坛 | 板块管理、发帖回帖、@通知 | Phase 3 |
-| 数据分析 | 仪表盘、统计报表、导出功能 | Phase 4 |
-| 运维监控 | 系统监控、APM、日志、告警 | Phase 4 |
+| 模块 | 说明 | 状态 | 完成度 |
+|------|------|------|--------|
+| 门户首页 | 部门简介、新闻公告、荣誉展示 | ✅ Phase 1 | 100% |
+| 个人工作台 | 待办事项、我的项目、消息通知 | ✅ Phase 1 | 100% |
+| 用户管理 | 认证授权、RBAC权限、组织架构 | ✅ Phase 1 | 100% |
+| 项目管理 | 项目创建、甘特图、文件管理 | ✅ Phase 1/2 | 100% |
+| 流程引擎 | 状态机、活动流转、DCP评审 | ✅ Phase 2 | 90% |
+| 产品货架 | 产品浏览、选用购物车、版本管理 | ✅ Phase 2 | 80% |
+| 技术货架 | 技术树、TRL等级、fork创建 | 🟡 Phase 2 | 70% |
+| 项目开发 | 流程全景、rdp协议、活动面板 | 🟡 Phase 2 | 60% |
+| 质量管理 | 需求管理、ECR/ECO、缺陷跟踪 | ✅ Phase 2 | 80% |
+| 桌面辅助 | Tauri桌面端、Git自动提交 | ⏳ Phase 2 | 30% |
+| 知识库 | 分类管理、Obsidian同步、Zotero集成 | ⏳ Phase 3 | 0% |
+| 全文搜索 | 中文分词、跨模块搜索、结果高亮 | ⏳ Phase 3 | 0% |
+| 技术论坛 | 板块管理、发帖回帖、@通知 | ⏳ Phase 3 | 0% |
+| 数据分析 | 仪表盘、统计报表、导出功能 | ⏳ Phase 4 | 0% |
+| 运维监控 | 系统监控、APM、日志、告警 | ⏳ Phase 4 | 0% |
 
 ---
 
@@ -232,12 +243,22 @@ sudo systemctl start rdp-casdoor
 
 ---
 
+## 项目进度
+
+| 阶段 | 状态 | 进度 | 说明 |
+|------|------|------|------|
+| **Phase 1** | ✅ 完成 | 100% | 基础骨架：用户、项目、认证、文件管理 |
+| **Phase 2** | 🟡 核心完成 | 80% | 核心业务：流程引擎、货架、质量、Git集成 |
+| **Phase 3** | ⏳ 未开始 | 0% | 知识智能：知识库、搜索、论坛 |
+| **Phase 4** | ⏳ 未开始 | 0% | 优化完善：数据分析、运维监控 |
+
 ## 版本历史
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
 | V1.0 | 2026-02-22 | 项目初始化，任务拆解完成 |
 | V1.1 | 2026-02-22 | 项目骨架搭建完成，多Agent协作规范建立 |
+| V1.2 | 2026-02-22 | Phase 2核心功能完成：工作流引擎、产品货架、质量管理、Gitea集成 |
 
 ---
 
