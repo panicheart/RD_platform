@@ -10,6 +10,11 @@ import {
   BellOutlined,
   SettingOutlined,
   LogoutOutlined,
+  BookOutlined,
+  MessageOutlined,
+  BarChartOutlined,
+  MonitorOutlined,
+  ShoppingOutlined,
 } from '@ant-design/icons'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -36,6 +41,31 @@ const menuItems = [
     icon: <TeamOutlined />,
     label: '用户管理',
   },
+  {
+    key: '/shelf',
+    icon: <ShoppingOutlined />,
+    label: '产品货架',
+  },
+  {
+    key: '/knowledge',
+    icon: <BookOutlined />,
+    label: '知识库',
+  },
+  {
+    key: '/forum',
+    icon: <MessageOutlined />,
+    label: '技术论坛',
+  },
+  {
+    key: '/analytics',
+    icon: <BarChartOutlined />,
+    label: '数据分析',
+  },
+  {
+    key: '/monitor',
+    icon: <MonitorOutlined />,
+    label: '系统监控',
+  },
 ]
 
 const breadcrumbNameMap: Record<string, string> = {
@@ -43,6 +73,11 @@ const breadcrumbNameMap: Record<string, string> = {
   '/projects': '项目管理',
   '/users': '用户管理',
   '/portal': '门户首页',
+  '/shelf': '产品货架',
+  '/knowledge': '知识库',
+  '/forum': '技术论坛',
+  '/analytics': '数据分析',
+  '/monitor': '系统监控',
 }
 
 export default function MainLayout() {
@@ -70,7 +105,6 @@ export default function MainLayout() {
             : <a onClick={() => navigate(url)}>{name}</a>,
         })
       } else if (index > 0) {
-        // For dynamic routes like /projects/:id, show "详情"
         items.push({ title: <span>详情</span> })
       }
     })
@@ -88,7 +122,6 @@ export default function MainLayout() {
   }
 
   const selectedKeys = useMemo(() => {
-    // Match the first-level path for menu highlighting
     const match = location.pathname.match(/^\/[^/]+/)
     return match ? [match[0]] : []
   }, [location.pathname])

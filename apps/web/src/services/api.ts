@@ -59,6 +59,11 @@ class APIClient {
     return response.data.data as T;
   }
 
+  async patch<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.client.patch<APIResponse<T>>(url, data, config);
+    return response.data.data as T;
+  }
+
   async getPaginated<T>(url: string, params?: Record<string, unknown>): Promise<PaginatedResponse<T>> {
     const response = await this.client.get<APIResponse<PaginatedResponse<T>>>(url, { params });
     return response.data.data as PaginatedResponse<T>;

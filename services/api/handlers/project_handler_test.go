@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"rdp/services/api/models"
+	"rdp-platform/rdp-api/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

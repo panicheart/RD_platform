@@ -5,9 +5,9 @@ import (
 	"errors"
 	"time"
 
-	"rdp/services/api/models"
+	"rdp-platform/rdp-api/models"
 
-	"github.com/google/uuid"
+	"github.com/oklog/ulid/v2"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -24,19 +24,19 @@ func NewSecurityService(db *gorm.DB) *SecurityService {
 
 // CreateAuditLog creates a new audit log entry
 func (s *SecurityService) CreateAuditLog(ctx context.Context, log *models.AuditLog) error {
-	log.ID = uuid.New()
+	log.ID = ulid.Make().String()
 	log.CreatedAt = time.Now().UTC()
 	return s.db.Create(log).Error
 }
 
 // LogAction logs a user action for audit
-func (s *SecurityService) LogAction(ctx context.Context, userID *uuid.UUID, username *string, action, resource, resourceID string, classification string) error {
+func (s *SecurityService) LogAction(ctx context.Context, userID *string, username *string, action, resource, resourceID string, classification string) error {
 	log := &models.AuditLog{
-		UserID:        userID,
-		Username:      username,
-		Action:        action,
-		Resource:      resource,
-		ResourceID:    &resourceID,
+		UserID:         userID,
+		Username:       username,
+		Action:         action,
+		Resource:       resource,
+		ResourceID:     &resourceID,
 		Classification: classification,
 	}
 
@@ -92,12 +92,8 @@ func (s *SecurityService) ListAuditLogs(ctx context.Context, page, pageSize int,
 // GetAuditLogByID returns an audit log by ID
 func (s *SecurityService) GetAuditLogByID(ctx context.Context, id string) (*models.AuditLog, error) {
 	var log models.AuditLog
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return nil, errors.New("invalid audit log ID")
-	}
 
-	if err := s.db.First(&log, "id = ?", uid).Error; err != nil {
+	if err := s.db.First(&log, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("audit log not found")
 		}
@@ -109,7 +105,7 @@ func (s *SecurityService) GetAuditLogByID(ctx context.Context, id string) (*mode
 
 // CreateLoginLog creates a login attempt log
 func (s *SecurityService) CreateLoginLog(ctx context.Context, log *models.LoginLog) error {
-	log.ID = uuid.New()
+	log.ID = ulid.Make().String()
 	log.CreatedAt = time.Now().UTC()
 	return s.db.Create(log).Error
 }
@@ -196,7 +192,7 @@ func NewSessionService(db *gorm.DB) *SessionService {
 
 // CreateSession creates a new session
 func (s *SessionService) CreateSession(ctx context.Context, session *models.Session) error {
-	session.ID = uuid.New()
+	session.ID = ulid.Make().String()
 	session.CreatedAt = time.Now().UTC()
 	session.LastActiveAt = session.CreatedAt
 	return s.db.Create(session).Error
@@ -228,11 +224,7 @@ func (s *SessionService) RevokeSession(ctx context.Context, token string) error 
 
 // RevokeAllUserSessions revokes all sessions for a user
 func (s *SessionService) RevokeAllUserSessions(ctx context.Context, userID string) error {
-	uid, err := uuid.Parse(userID)
-	if err != nil {
-		return errors.New("invalid user ID")
-	}
-	return s.db.Model(&models.Session{}).Where("user_id = ?", uid).Update("is_revoked", true).Error
+	return s.db.Model(&models.Session{}).Where("user_id = ?", userID).Update("is_revoked", true).Error
 }
 
 // CleanExpiredSessions removes expired sessions

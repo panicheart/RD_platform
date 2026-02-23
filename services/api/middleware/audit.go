@@ -3,11 +3,10 @@ package middleware
 import (
 	"bytes"
 	"io"
-	"net/http"
 	"time"
 
-	"rdp/services/api/models"
-	"rdp/services/api/services"
+	"rdp-platform/rdp-api/models"
+	"rdp-platform/rdp-api/services"
 
 	"github.com/gin-gonic/gin"
 )
@@ -65,21 +64,26 @@ func (m *AuditMiddleware) Audit() gin.HandlerFunc {
 		classification := m.determineClassification(c.Request.URL.Path)
 
 		// Create audit log
+		userAgent := c.Request.UserAgent()
+		method := c.Request.Method
+		path := c.Request.URL.Path
+		statusCode := c.Writer.Status()
+
 		log := &models.AuditLog{
-			UserID:        nil, // Would need to parse UUID
-			Username:      username,
-			IPAddress:     m.getClientIP(c),
-			UserAgent:     &c.Request.UserAgent,
-			Action:        c.Request.Method,
-			Resource:      m.getResource(c.Request.URL.Path),
-			ResourceID:    m.getResourceID(c),
-			Method:        &c.Request.Method,
-			Path:          &c.Request.URL.Path,
-			ResponseCode:  &c.Writer.Status(),
+			UserID:         nil, // Would need to parse UUID
+			Username:       username,
+			IPAddress:      m.getClientIP(c),
+			UserAgent:      &userAgent,
+			Action:         method,
+			Resource:       m.getResource(path),
+			ResourceID:     m.getResourceID(c),
+			Method:         &method,
+			Path:           &path,
+			ResponseCode:   &statusCode,
 			Classification: classification,
 		}
 
-		if userID != "" && *userID != "" {
+		if userID != nil && *userID != "" {
 			// userID would be parsed to UUID here
 		}
 

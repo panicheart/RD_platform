@@ -8,35 +8,31 @@ import (
 	"os"
 	"path/filepath"
 
-	"rdp/services/api/models"
+	"rdp-platform/rdp-api/models"
 
-	"github.com/google/uuid"
+	"github.com/oklog/ulid/v2"
 	"gorm.io/gorm"
 )
 
 // FileService handles file management business logic
 type FileService struct {
-	db        *gorm.DB
-	basePath  string
+	db       *gorm.DB
+	basePath string
 }
 
 // NewFileService creates a new FileService
 func NewFileService(db *gorm.DB, basePath string) *FileService {
 	return &FileService{
-		db:        db,
-		basePath:  basePath,
+		db:       db,
+		basePath: basePath,
 	}
 }
 
 // ListProjectFiles returns files for a project
 func (s *FileService) ListProjectFiles(ctx context.Context, projectID string, path string) ([]models.File, error) {
 	var files []models.ProjectFile
-	projectUID, err := uuid.Parse(projectID)
-	if err != nil {
-		return nil, errors.New("invalid project ID")
-	}
 
-	query := s.db.Model(&models.ProjectFile{}).Where("project_id = ?", projectUID)
+	query := s.db.Model(&models.ProjectFile{}).Where("project_id = ?", projectID)
 
 	if path != "" {
 		query = query.Where("path = ?", path)
@@ -69,13 +65,8 @@ func (s *FileService) ListProjectFiles(ctx context.Context, projectID string, pa
 
 // UploadFile uploads a file to a project
 func (s *FileService) UploadFile(ctx context.Context, projectID, path, filename string, reader io.Reader) (*models.ProjectFile, error) {
-	projectUID, err := uuid.Parse(projectID)
-	if err != nil {
-		return nil, errors.New("invalid project ID")
-	}
-
 	// Generate file ID
-	fileID := uuid.New()
+	fileID := ulid.Make().String()
 
 	// Create directory path
 	dirPath := filepath.Join(s.basePath, projectID, path)
@@ -105,7 +96,7 @@ func (s *FileService) UploadFile(ctx context.Context, projectID, path, filename 
 	// Save to database
 	projectFile := models.ProjectFile{
 		ID:          fileID,
-		ProjectID:   projectUID,
+		ProjectID:   projectID,
 		Name:        filename,
 		Path:        path,
 		Size:        written,
@@ -124,18 +115,13 @@ func (s *FileService) UploadFile(ctx context.Context, projectID, path, filename 
 
 // CreateDirectory creates a directory in a project
 func (s *FileService) CreateDirectory(ctx context.Context, projectID, path, name string) (*models.ProjectFile, error) {
-	projectUID, err := uuid.Parse(projectID)
-	if err != nil {
-		return nil, errors.New("invalid project ID")
-	}
-
 	// Check if directory already exists
 	var existing models.ProjectFile
-	if err := s.db.First(&existing, "project_id = ? AND path = ? AND name = ? AND is_directory = ?", projectUID, path, name, true).Error; err == nil {
+	if err := s.db.First(&existing, "project_id = ? AND path = ? AND name = ? AND is_directory = ?", projectID, path, name, true).Error; err == nil {
 		return nil, errors.New("directory already exists")
 	}
 
-	dirID := uuid.New()
+	dirID := ulid.Make().String()
 
 	// Create physical directory
 	dirPath := filepath.Join(s.basePath, projectID, path, name)
@@ -146,7 +132,7 @@ func (s *FileService) CreateDirectory(ctx context.Context, projectID, path, name
 	// Save to database
 	projectDir := models.ProjectFile{
 		ID:          dirID,
-		ProjectID:   projectUID,
+		ProjectID:   projectID,
 		Name:        name,
 		Path:        path,
 		IsDirectory: true,
@@ -163,13 +149,8 @@ func (s *FileService) CreateDirectory(ctx context.Context, projectID, path, name
 
 // DeleteFile deletes a file or directory
 func (s *FileService) DeleteFile(ctx context.Context, fileID string) error {
-	uid, err := uuid.Parse(fileID)
-	if err != nil {
-		return errors.New("invalid file ID")
-	}
-
 	var file models.ProjectFile
-	if err := s.db.First(&file, "id = ?", uid).Error; err != nil {
+	if err := s.db.First(&file, "id = ?", fileID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("file not found")
 		}
@@ -197,13 +178,8 @@ func (s *FileService) DeleteFile(ctx context.Context, fileID string) error {
 
 // DownloadFile returns a reader for a file
 func (s *FileService) DownloadFile(ctx context.Context, fileID string) (io.ReadCloser, error) {
-	uid, err := uuid.Parse(fileID)
-	if err != nil {
-		return nil, errors.New("invalid file ID")
-	}
-
 	var file models.ProjectFile
-	if err := s.db.First(&file, "id = ? AND is_directory = ?", uid, false).Error; err != nil {
+	if err := s.db.First(&file, "id = ? AND is_directory = ?", fileID, false).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("file not found")
 		}

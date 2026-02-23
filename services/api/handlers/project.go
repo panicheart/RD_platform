@@ -4,11 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"rdp/services/api/models"
-	"rdp/services/api/services"
+	"rdp-platform/rdp-api/models"
+	"rdp-platform/rdp-api/services"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 // ProjectHandler handles project HTTP requests
@@ -25,18 +24,18 @@ func NewProjectHandler(projectService *services.ProjectService) *ProjectHandler 
 
 // CreateProjectRequest represents the request body for creating a project
 type CreateProjectRequest struct {
-	Name                string     `json:"name" binding:"required,max=200"`
-	Description         *string    `json:"description"`
-	Category            string     `json:"category" binding:"required"`
-	ProductLine         *string    `json:"product_line"`
-	Team                *string    `json:"team"`
-	ProcessTemplateID   *string    `json:"process_template_id"`
-	StartDate           *string    `json:"start_date"`
-	EndDate             *string    `json:"end_date"`
-	LeaderID            *string    `json:"leader_id"`
-	TechLeaderID        *string    `json:"tech_leader_id"`
-	ProductLeaderID     *string    `json:"product_leader_id"`
-	ClassificationLevel string     `json:"classification_level"`
+	Name                string  `json:"name" binding:"required,max=200"`
+	Description         *string `json:"description"`
+	Category            string  `json:"category" binding:"required"`
+	ProductLine         *string `json:"product_line"`
+	Team                *string `json:"team"`
+	ProcessTemplateID   *string `json:"process_template_id"`
+	StartDate           *string `json:"start_date"`
+	EndDate             *string `json:"end_date"`
+	LeaderID            *string `json:"leader_id"`
+	TechLeaderID        *string `json:"tech_leader_id"`
+	ProductLeaderID     *string `json:"product_leader_id"`
+	ClassificationLevel string  `json:"classification_level"`
 }
 
 // CreateProject handles POST /api/v1/projects
@@ -70,24 +69,16 @@ func (h *ProjectHandler) CreateProject(c *gin.Context) {
 		project.Team = req.Team
 	}
 	if req.ProcessTemplateID != nil {
-		if pid, err := uuid.Parse(*req.ProcessTemplateID); err == nil {
-			project.ProcessTemplateID = &pid
-		}
+		project.ProcessTemplateID = req.ProcessTemplateID
 	}
 	if req.LeaderID != nil {
-		if lid, err := uuid.Parse(*req.LeaderID); err == nil {
-			project.LeaderID = &lid
-		}
+		project.LeaderID = req.LeaderID
 	}
 	if req.TechLeaderID != nil {
-		if tid, err := uuid.Parse(*req.TechLeaderID); err == nil {
-			project.TechLeaderID = &tid
-		}
+		project.TechLeaderID = req.TechLeaderID
 	}
 	if req.ProductLeaderID != nil {
-		if pid, err := uuid.Parse(*req.ProductLeaderID); err == nil {
-			project.ProductLeaderID = &pid
-		}
+		project.ProductLeaderID = req.ProductLeaderID
 	}
 
 	if project.ClassificationLevel == "" {
@@ -405,68 +396,6 @@ func (h *ProjectHandler) GetProjectActivities(c *gin.Context) {
 	SuccessResponse(c, activities)
 }
 
-// CreateActivityRequest represents the request body for creating an activity
-type CreateActivityRequest struct {
-	Name             string  `json:"name" binding:"required,max=200"`
-	Description      *string `json:"description"`
-	StartDate        *string `json:"start_date"`
-	EndDate          *string `json:"end_date"`
-	DependsOn        *string `json:"depends_on"`
-	AssigneeID       *string `json:"assignee_id"`
-	SortOrder        int     `json:"sort_order"`
-	TemplateActivityID *string `json:"template_activity_id"`
-}
-
-// CreateActivity handles POST /api/v1/projects/:id/activities
-func (h *ProjectHandler) CreateActivity(c *gin.Context) {
-	projectID := c.Param("id")
-
-	// Validate project ID
-	projectUID, err := uuid.Parse(projectID)
-	if err != nil {
-		BadRequestResponse(c, "invalid project ID")
-		return
-	}
-
-	var req CreateActivityRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		BadRequestResponse(c, "invalid request body: "+err.Error())
-		return
-	}
-
-	activity := models.Activity{
-		ProjectID:          projectUID,
-		Name:               req.Name,
-		Description:        req.Description,
-		Status:             "pending",
-		SortOrder:          req.SortOrder,
-	}
-
-	if req.DependsOn != nil {
-		activity.DependsOn = req.DependsOn
-	}
-	if req.TemplateActivityID != nil {
-		activity.TemplateActivityID = req.TemplateActivityID
-	}
-	if req.AssigneeID != nil {
-		if aid, err := uuid.Parse(*req.AssigneeID); err == nil {
-			activity.AssigneeID = &aid
-		}
-	}
-
-	err = h.projectService.CreateActivity(c.Request.Context(), &activity)
-	if err != nil {
-		ErrorResponse(c, http.StatusBadRequest, 6402, err.Error())
-		return
-	}
-
-	c.JSON(http.StatusCreated, gin.H{
-		"code":    0,
-		"message": "activity created successfully",
-		"data":    activity,
-	})
-}
-
 // GetUserProjects handles GET /api/v1/users/me/projects
 func (h *ProjectHandler) GetUserProjects(c *gin.Context) {
 	userID, exists := c.Get("user_id")
@@ -522,43 +451,38 @@ func (h *ProjectHandler) GetProjectGantt(c *gin.Context) {
 
 	// Format for Gantt chart
 	type GanttTask struct {
-		ID          string  `json:"id"`
-		Name        string  `json:"name"`
-		StartDate   *string `json:"start_date,omitempty"`
-		EndDate     *string `json:"end_date,omitempty"`
-		Progress    int     `json:"progress"`
-		Status      string  `json:"status"`
-		AssigneeID  *string `json:"assignee_id,omitempty"`
-		DependsOn   *string `json:"depends_on,omitempty"`
-		SortOrder   int     `json:"sort_order"`
+		ID         string  `json:"id"`
+		Name       string  `json:"name"`
+		StartDate  *string `json:"start_date,omitempty"`
+		EndDate    *string `json:"end_date,omitempty"`
+		Progress   int     `json:"progress"`
+		Status     string  `json:"status"`
+		AssigneeID *string `json:"assignee_id,omitempty"`
+		Sequence   int     `json:"sequence"`
 	}
 
 	tasks := make([]GanttTask, 0, len(activities))
 	for _, activity := range activities {
 		task := GanttTask{
-			ID:         activity.ID.String(),
-			Name:       activity.Name,
-			Progress:   activity.Progress,
-			Status:     activity.Status,
-			SortOrder:  activity.SortOrder,
+			ID:       activity.ID,
+			Name:     activity.Name,
+			Progress: activity.Progress,
+			Status:   string(activity.Status),
+			Sequence: activity.Sequence,
 		}
-		
-		if activity.StartDate != nil {
-			startStr := activity.StartDate.Format("2006-01-02")
+
+		if activity.PlannedStart != nil {
+			startStr := activity.PlannedStart.Format("2006-01-02")
 			task.StartDate = &startStr
 		}
-		if activity.EndDate != nil {
-			endStr := activity.EndDate.Format("2006-01-02")
+		if activity.PlannedEnd != nil {
+			endStr := activity.PlannedEnd.Format("2006-01-02")
 			task.EndDate = &endStr
 		}
 		if activity.AssigneeID != nil {
-			aid := activity.AssigneeID.String()
-			task.AssigneeID = &aid
+			task.AssigneeID = activity.AssigneeID
 		}
-		if activity.DependsOn != nil && *activity.DependsOn != "" {
-			task.DependsOn = activity.DependsOn
-		}
-		
+
 		tasks = append(tasks, task)
 	}
 

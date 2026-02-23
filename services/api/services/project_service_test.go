@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"rdp/services/api/models"
+	"rdp-platform/rdp-api/models"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"rdp/services/api/services"
+	"rdp-platform/rdp-api/services"
 
 	"github.com/gin-gonic/gin"
 )

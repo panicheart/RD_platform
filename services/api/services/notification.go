@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"rdp/services/api/models"
+	"rdp-platform/rdp-api/models"
 
-	"github.com/google/uuid"
+	"github.com/oklog/ulid/v2"
 	"gorm.io/gorm"
 )
 
@@ -25,12 +25,7 @@ func (s *NotificationService) ListUserNotifications(ctx context.Context, userID 
 	var notifications []models.Notification
 	var total int64
 
-	uid, err := uuid.Parse(userID)
-	if err != nil {
-		return nil, 0, errors.New("invalid user ID")
-	}
-
-	query := s.db.Model(&models.Notification{}).Where("user_id = ?", uid)
+	query := s.db.Model(&models.Notification{}).Where("user_id = ?", userID)
 
 	if unreadOnly {
 		query = query.Where("is_read = ?", false)
@@ -51,12 +46,8 @@ func (s *NotificationService) ListUserNotifications(ctx context.Context, userID 
 // GetNotificationByID returns a notification by ID
 func (s *NotificationService) GetNotificationByID(ctx context.Context, id string) (*models.Notification, error) {
 	var notification models.Notification
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return nil, errors.New("invalid notification ID")
-	}
 
-	if err := s.db.First(&notification, "id = ?", uid).Error; err != nil {
+	if err := s.db.First(&notification, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("notification not found")
 		}
@@ -68,18 +59,13 @@ func (s *NotificationService) GetNotificationByID(ctx context.Context, id string
 
 // CreateNotification creates a new notification
 func (s *NotificationService) CreateNotification(ctx context.Context, notification *models.Notification) error {
-	notification.ID = uuid.New()
+	notification.ID = ulid.Make().String()
 	return s.db.Create(notification).Error
 }
 
 // MarkAsRead marks a notification as read
 func (s *NotificationService) MarkAsRead(ctx context.Context, id string) error {
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return errors.New("invalid notification ID")
-	}
-
-	result := s.db.Model(&models.Notification{}).Where("id = ?", uid).Update("is_read", true)
+	result := s.db.Model(&models.Notification{}).Where("id = ?", id).Update("is_read", true)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -92,22 +78,12 @@ func (s *NotificationService) MarkAsRead(ctx context.Context, id string) error {
 
 // MarkAllAsRead marks all notifications as read for a user
 func (s *NotificationService) MarkAllAsRead(ctx context.Context, userID string) error {
-	uid, err := uuid.Parse(userID)
-	if err != nil {
-		return errors.New("invalid user ID")
-	}
-
-	return s.db.Model(&models.Notification{}).Where("user_id = ? AND is_read = ?", uid, false).Update("is_read", true).Error
+	return s.db.Model(&models.Notification{}).Where("user_id = ? AND is_read = ?", userID, false).Update("is_read", true).Error
 }
 
 // DeleteNotification deletes a notification
 func (s *NotificationService) DeleteNotification(ctx context.Context, id string) error {
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return errors.New("invalid notification ID")
-	}
-
-	result := s.db.Where("id = ?", uid).Delete(&models.Notification{})
+	result := s.db.Where("id = ?", id).Delete(&models.Notification{})
 	if result.Error != nil {
 		return result.Error
 	}
@@ -121,12 +97,8 @@ func (s *NotificationService) DeleteNotification(ctx context.Context, id string)
 // GetUnreadCount returns the count of unread notifications for a user
 func (s *NotificationService) GetUnreadCount(ctx context.Context, userID string) (int64, error) {
 	var count int64
-	uid, err := uuid.Parse(userID)
-	if err != nil {
-		return 0, errors.New("invalid user ID")
-	}
 
-	if err := s.db.Model(&models.Notification{}).Where("user_id = ? AND is_read = ?", uid, false).Count(&count).Error; err != nil {
+	if err := s.db.Model(&models.Notification{}).Where("user_id = ? AND is_read = ?", userID, false).Count(&count).Error; err != nil {
 		return 0, err
 	}
 
@@ -167,12 +139,8 @@ func (s *AnnouncementService) ListActiveAnnouncements(ctx context.Context, page,
 // GetAnnouncementByID returns an announcement by ID
 func (s *AnnouncementService) GetAnnouncementByID(ctx context.Context, id string) (*models.Announcement, error) {
 	var announcement models.Announcement
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return nil, errors.New("invalid announcement ID")
-	}
 
-	if err := s.db.First(&announcement, "id = ?", uid).Error; err != nil {
+	if err := s.db.First(&announcement, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("announcement not found")
 		}
@@ -184,18 +152,13 @@ func (s *AnnouncementService) GetAnnouncementByID(ctx context.Context, id string
 
 // CreateAnnouncement creates a new announcement
 func (s *AnnouncementService) CreateAnnouncement(ctx context.Context, announcement *models.Announcement) error {
-	announcement.ID = uuid.New()
+	announcement.ID = ulid.Make().String()
 	return s.db.Create(announcement).Error
 }
 
 // UpdateAnnouncement updates an announcement
 func (s *AnnouncementService) UpdateAnnouncement(ctx context.Context, id string, updates map[string]interface{}) (*models.Announcement, error) {
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return nil, errors.New("invalid announcement ID")
-	}
-
-	result := s.db.Model(&models.Announcement{}).Where("id = ?", uid).Updates(updates)
+	result := s.db.Model(&models.Announcement{}).Where("id = ?", id).Updates(updates)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -208,12 +171,7 @@ func (s *AnnouncementService) UpdateAnnouncement(ctx context.Context, id string,
 
 // DeleteAnnouncement deletes an announcement
 func (s *AnnouncementService) DeleteAnnouncement(ctx context.Context, id string) error {
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return errors.New("invalid announcement ID")
-	}
-
-	result := s.db.Where("id = ?", uid).Delete(&models.Announcement{})
+	result := s.db.Where("id = ?", id).Delete(&models.Announcement{})
 	if result.Error != nil {
 		return result.Error
 	}

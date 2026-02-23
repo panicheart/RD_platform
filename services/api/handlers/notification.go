@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"rdp/services/api/models"
-	"rdp/services/api/services"
+	"rdp-platform/rdp-api/models"
+	"rdp-platform/rdp-api/services"
 
 	"github.com/gin-gonic/gin"
 )

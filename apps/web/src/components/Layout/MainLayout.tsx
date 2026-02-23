@@ -29,6 +29,8 @@ import {
   DownOutlined,
   TeamOutlined,
   PartitionOutlined,
+  BarChartOutlined,
+  MonitorOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -134,6 +136,18 @@ export function MainLayout() {
       label: '技术论坛',
       onClick: () => navigate('/forum'),
     },
+    {
+      key: 'analytics',
+      icon: <BarChartOutlined />,
+      label: '数据分析',
+      onClick: () => navigate('/analytics'),
+    },
+    {
+      key: 'monitor',
+      icon: <MonitorOutlined />,
+      label: '系统监控',
+      onClick: () => navigate('/monitor'),
+    },
   ];
 
   // 获取当前选中的菜单项
@@ -146,6 +160,8 @@ export function MainLayout() {
     if (pathname.startsWith('/shelf')) return ['shelf'];
     if (pathname.startsWith('/knowledge')) return ['knowledge'];
     if (pathname.startsWith('/forum')) return ['forum'];
+    if (pathname.startsWith('/analytics')) return ['analytics'];
+    if (pathname.startsWith('/monitor')) return ['monitor'];
     if (pathname.startsWith('/portal')) return ['portal'];
     return [];
   };
@@ -160,6 +176,8 @@ export function MainLayout() {
     if (pathname.startsWith('/shelf')) return '产品货架';
     if (pathname.startsWith('/knowledge')) return '知识库';
     if (pathname.startsWith('/forum')) return '技术论坛';
+    if (pathname.startsWith('/analytics')) return '数据分析';
+    if (pathname.startsWith('/monitor')) return '系统监控';
     if (pathname.startsWith('/profile')) return '个人资料';
     if (pathname.startsWith('/settings')) return '系统设置';
     if (pathname.startsWith('/notifications')) return '消息通知';

@@ -12,6 +12,14 @@ const ProjectsPage = lazy(() => import('./pages/projects/ProjectsPage'));
 const ProjectDetailPage = lazy(() => import('./pages/projects/ProjectDetailPage'));
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const UsersPage = lazy(() => import('./pages/users/UsersPage'));
+const ShelfPage = lazy(() => import('./pages/shelf/ShelfPage'));
+const KnowledgeList = lazy(() => import('./pages/knowledge/KnowledgeList'));
+const ForumPage = lazy(() => import('./pages/forum/ForumPage'));
+const ForumBoardPage = lazy(() => import('./pages/forum/ForumBoardPage'));
+const ForumPostPage = lazy(() => import('./pages/forum/ForumPostPage'));
+const ForumCreatePostPage = lazy(() => import('./pages/forum/ForumCreatePostPage'));
+const AnalyticsDashboard = lazy(() => import('./pages/analytics/AnalyticsDashboard'));
+const MonitorDashboard = lazy(() => import('./pages/monitor/MonitorDashboard'));
 
 // Page loading component
 const PageLoading = () => (
@@ -42,9 +50,14 @@ function App() {
               <Route path="/projects" element={<ProjectsPage />} />
               <Route path="/projects/:id" element={<ProjectDetailPage />} />
               <Route path="/users" element={<UsersPage />} />
-              <Route path="/shelf" element={<div>产品货架页面 - 待开发</div>} />
-              <Route path="/knowledge" element={<div>知识库页面 - 待开发</div>} />
-              <Route path="/forum" element={<div>技术论坛页面 - 待开发</div>} />
+              <Route path="/shelf" element={<ShelfPage />} />
+              <Route path="/knowledge" element={<KnowledgeList />} />
+              <Route path="/forum" element={<ForumPage />} />
+              <Route path="/forum/boards/:boardId" element={<ForumBoardPage />} />
+              <Route path="/forum/posts/create" element={<ForumCreatePostPage />} />
+              <Route path="/forum/posts/:postId" element={<ForumPostPage />} />
+              <Route path="/analytics" element={<AnalyticsDashboard />} />
+              <Route path="/monitor" element={<MonitorDashboard />} />
               <Route path="/profile" element={<div>个人资料页面 - 待开发</div>} />
               <Route path="/settings" element={<div>系统设置页面 - 待开发</div>} />
               <Route path="/notifications" element={<div>消息通知页面 - 待开发</div>} />

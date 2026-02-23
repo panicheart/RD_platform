@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"rdp/services/api/models"
-	"rdp/services/api/services"
+	"rdp-platform/rdp-api/models"
+	"rdp-platform/rdp-api/services"
 
 	"github.com/gin-gonic/gin"
 )

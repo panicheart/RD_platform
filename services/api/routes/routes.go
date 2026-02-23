@@ -3,17 +3,19 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 
-	"rdp/services/api/handlers"
-	"rdp/services/api/middleware"
-	"rdp/services/api/services"
+	"rdp-platform/rdp-api/handlers"
+	"rdp-platform/rdp-api/middleware"
+	"rdp-platform/rdp-api/services"
 )
 
 // Router manages all application routes
 type Router struct {
-	engine          *gin.Engine
-	userService     *services.UserService
-	projectService  *services.ProjectService
-	authMiddleware  *middleware.AuthMiddleware
+	engine           *gin.Engine
+	userService      *services.UserService
+	projectService   *services.ProjectService
+	forumService     *services.ForumService
+	knowledgeService *services.KnowledgeService
+	jwtMiddleware    *middleware.JWTMiddleware
 }
 
 // NewRouter creates a new Router
@@ -21,13 +23,17 @@ func NewRouter(
 	engine *gin.Engine,
 	userService *services.UserService,
 	projectService *services.ProjectService,
-	authMiddleware *middleware.AuthMiddleware,
+	forumService *services.ForumService,
+	knowledgeService *services.KnowledgeService,
+	jwtMiddleware *middleware.JWTMiddleware,
 ) *Router {
 	return &Router{
-		engine:          engine,
-		userService:     userService,
-		projectService:  projectService,
-		authMiddleware:  authMiddleware,
+		engine:           engine,
+		userService:      userService,
+		projectService:   projectService,
+		forumService:     forumService,
+		knowledgeService: knowledgeService,
+		jwtMiddleware:    jwtMiddleware,
 	}
 }
 
@@ -50,6 +56,12 @@ func (r *Router) SetupRoutes() {
 
 		// Project routes (authenticated)
 		r.setupProjectRoutes(v1)
+
+		// Forum routes (authenticated)
+		r.setupForumRoutes(v1)
+
+		// Knowledge routes (authenticated)
+		r.setupKnowledgeRoutes(v1)
 	}
 }
 
@@ -62,19 +74,20 @@ func (r *Router) setupGlobalMiddleware() {
 
 // setupHealthRoutes configures health check routes
 func (r *Router) setupHealthRoutes() {
-	healthHandler := handlers.NewHealthHandler()
-	r.engine.GET("/api/v1/health", healthHandler.HealthCheck)
+	r.engine.GET("/api/v1/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{"code": 0, "message": "healthy", "data": nil})
+	})
 }
 
 // setupAuthRoutes configures authentication routes
 func (r *Router) setupAuthRoutes(group *gin.RouterGroup) {
-	userHandler := handlers.NewUserHandler(r.userService, nil)
+	authHandler := handlers.NewAuthHandler(r.userService, r.jwtMiddleware)
 
 	auth := group.Group("/auth")
 	{
-		auth.POST("/login", userHandler.Login)
-		auth.POST("/refresh", userHandler.RefreshToken)
-		auth.POST("/logout", r.authMiddleware.Authenticate(), userHandler.Logout)
+		auth.POST("/login", authHandler.Login)
+		auth.POST("/refresh", authHandler.Refresh)
+		auth.POST("/logout", r.jwtMiddleware.Authenticate(), authHandler.Logout)
 	}
 }
 
@@ -83,7 +96,7 @@ func (r *Router) setupUserRoutes(group *gin.RouterGroup) {
 	userHandler := handlers.NewUserHandler(r.userService, nil)
 
 	users := group.Group("/users")
-	users.Use(r.authMiddleware.Authenticate())
+	users.Use(r.jwtMiddleware.Authenticate())
 	{
 		// List users
 		users.GET("", userHandler.ListUsers)
@@ -113,7 +126,7 @@ func (r *Router) setupProjectRoutes(group *gin.RouterGroup) {
 	projectHandler := r.projectHandler()
 
 	projects := group.Group("/projects")
-	projects.Use(r.authMiddleware.Authenticate())
+	projects.Use(r.jwtMiddleware.Authenticate())
 	{
 		// List and create projects
 		projects.GET("", projectHandler.GetProjects)
@@ -143,7 +156,6 @@ func (r *Router) setupProjectRoutes(group *gin.RouterGroup) {
 
 			// Activities
 			project.GET("/activities", projectHandler.GetProjectActivities)
-			project.POST("/activities", projectHandler.CreateActivity)
 		}
 	}
 }
@@ -151,6 +163,62 @@ func (r *Router) setupProjectRoutes(group *gin.RouterGroup) {
 // projectHandler creates a new ProjectHandler instance
 func (r *Router) projectHandler() *handlers.ProjectHandler {
 	return handlers.NewProjectHandler(r.projectService)
+}
+
+// setupForumRoutes configures forum routes
+func (r *Router) setupForumRoutes(group *gin.RouterGroup) {
+	forumHandler := handlers.NewForumHandler(r.forumService)
+
+	// Public forum routes (for compatibility with test expectations)
+	group.GET("/boards", r.jwtMiddleware.Authenticate(), forumHandler.ListBoards)
+	group.GET("/posts", r.jwtMiddleware.Authenticate(), forumHandler.ListPosts)
+	group.GET("/posts/:id", r.jwtMiddleware.Authenticate(), forumHandler.GetPost)
+	group.GET("/posts/:id/replies", r.jwtMiddleware.Authenticate(), forumHandler.ListReplies)
+
+	// Protected forum routes under /forum prefix
+	forum := group.Group("/forum")
+	forum.Use(r.jwtMiddleware.Authenticate())
+	{
+		// Boards
+		forum.GET("/boards", forumHandler.ListBoards)
+		forum.POST("/boards", r.requireRole("admin"), forumHandler.CreateBoard)
+
+		// Posts
+		forum.GET("/posts", forumHandler.ListPosts)
+		forum.POST("/posts", forumHandler.CreatePost)
+		forum.GET("/posts/:id", forumHandler.GetPost)
+		forum.PUT("/posts/:id", forumHandler.UpdatePost)
+		forum.DELETE("/posts/:id", forumHandler.DeletePost)
+
+		// Replies
+		forum.GET("/posts/:id/replies", forumHandler.ListReplies)
+		forum.POST("/posts/:id/replies", forumHandler.CreateReply)
+		forum.PUT("/replies/:id", forumHandler.UpdateReply)
+		forum.DELETE("/replies/:id", forumHandler.DeleteReply)
+	}
+}
+
+// setupKnowledgeRoutes configures knowledge routes
+func (r *Router) setupKnowledgeRoutes(group *gin.RouterGroup) {
+	knowledgeHandler := handlers.NewKnowledgeHandler(r.knowledgeService)
+
+	// Public knowledge routes at root level (for test compatibility)
+	group.GET("/categories/tree", r.jwtMiddleware.Authenticate(), knowledgeHandler.GetCategoryTree)
+	group.GET("/tags", r.jwtMiddleware.Authenticate(), knowledgeHandler.ListTags)
+
+	// Protected knowledge routes under /knowledge prefix
+	knowledge := group.Group("/knowledge")
+	knowledge.Use(r.jwtMiddleware.Authenticate())
+	{
+		knowledge.GET("", knowledgeHandler.ListKnowledge)
+		knowledge.POST("", knowledgeHandler.CreateKnowledge)
+		knowledge.GET("/:id", knowledgeHandler.GetKnowledge)
+		knowledge.PUT("/:id", knowledgeHandler.UpdateKnowledge)
+		knowledge.DELETE("/:id", knowledgeHandler.DeleteKnowledge)
+		knowledge.GET("/categories", knowledgeHandler.GetCategoryTree)
+		knowledge.POST("/categories", r.requireRole("admin"), knowledgeHandler.CreateCategory)
+		knowledge.GET("/tags", knowledgeHandler.ListTags)
+	}
 }
 
 // requireRole middleware requires specific role

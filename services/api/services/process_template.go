@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"rdp/services/api/models"
+	"rdp-platform/rdp-api/models"
 
-	"github.com/google/uuid"
+	"github.com/oklog/ulid/v2"
 	"gorm.io/gorm"
 )
 
@@ -40,12 +40,8 @@ func (s *ProcessTemplateService) ListTemplates(ctx context.Context, category str
 // GetTemplateByID returns a template by ID
 func (s *ProcessTemplateService) GetTemplateByID(ctx context.Context, id string) (*models.ProcessTemplate, error) {
 	var template models.ProcessTemplate
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return nil, errors.New("invalid template ID")
-	}
 
-	if err := s.db.First(&template, "id = ?", uid).Error; err != nil {
+	if err := s.db.First(&template, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("template not found")
 		}
@@ -94,7 +90,7 @@ func (s *ProcessTemplateService) CreateTemplate(ctx context.Context, template *m
 		return errors.New("template code already exists")
 	}
 
-	template.ID = uuid.New()
+	template.ID = ulid.Make().String()
 
 	// If this is set as default, unset other defaults
 	if template.IsDefault {
@@ -108,22 +104,17 @@ func (s *ProcessTemplateService) CreateTemplate(ctx context.Context, template *m
 
 // UpdateTemplate updates a template
 func (s *ProcessTemplateService) UpdateTemplate(ctx context.Context, id string, updates map[string]interface{}) (*models.ProcessTemplate, error) {
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return nil, errors.New("invalid template ID")
-	}
-
 	// If setting as default, unset other defaults
 	if isDefault, ok := updates["is_default"].(bool); ok && isDefault {
 		template, _ := s.GetTemplateByID(ctx, id)
 		if template != nil {
 			s.db.Model(&models.ProcessTemplate{}).
-				Where("category = ? AND id != ? AND is_default = ?", template.Category, uid, true).
+				Where("category = ? AND id != ? AND is_default = ?", template.Category, id, true).
 				Update("is_default", false)
 		}
 	}
 
-	result := s.db.Model(&models.ProcessTemplate{}).Where("id = ?", uid).Updates(updates)
+	result := s.db.Model(&models.ProcessTemplate{}).Where("id = ?", id).Updates(updates)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -136,12 +127,7 @@ func (s *ProcessTemplateService) UpdateTemplate(ctx context.Context, id string, 
 
 // DeleteTemplate soft deletes a template
 func (s *ProcessTemplateService) DeleteTemplate(ctx context.Context, id string) error {
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return errors.New("invalid template ID")
-	}
-
-	result := s.db.Model(&models.ProcessTemplate{}).Where("id = ?", uid).Update("is_active", false)
+	result := s.db.Model(&models.ProcessTemplate{}).Where("id = ?", id).Update("is_active", false)
 	if result.Error != nil {
 		return result.Error
 	}

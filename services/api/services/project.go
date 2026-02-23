@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"time"
 
-	"rdp/services/api/models"
+	"rdp-platform/rdp-api/models"
+	"rdp-platform/rdp-api/utils"
 
-	"github.com/google/uuid"
+	"github.com/oklog/ulid/v2"
 	"gorm.io/gorm"
 )
 
@@ -70,12 +71,8 @@ func (s *ProjectService) ListProjects(ctx context.Context, page, pageSize int, f
 // GetProjectByID returns a project by ID
 func (s *ProjectService) GetProjectByID(ctx context.Context, id string) (*models.Project, error) {
 	var project models.Project
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return nil, errors.New("invalid project ID")
-	}
 
-	if err := s.db.Preload("Members").Preload("Members.User").First(&project, "id = ?", uid).Error; err != nil {
+	if err := s.db.Preload("Members").Preload("Members.User").First(&project, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("project not found")
 		}
@@ -104,24 +101,24 @@ func (s *ProjectService) GetProjectByCode(ctx context.Context, code string) (*mo
 func (s *ProjectService) GenerateProjectCode(ctx context.Context, category string) (string, error) {
 	// Map category to short code
 	categoryCode := getCategoryCode(category)
-	
+
 	// Get today's date
 	today := time.Now().Format("20060102")
-	
+
 	// Pattern for today's codes
 	prefix := fmt.Sprintf("RDP-%s-%s-", categoryCode, today)
-	
+
 	// Get the max sequence number for today
 	var maxCode string
 	err := s.db.Model(&models.Project{}).
 		Where("code LIKE ?", prefix+"%").
 		Order("code DESC").
 		Pluck("code", &maxCode).Error
-	
+
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return "", err
 	}
-	
+
 	// Calculate next sequence
 	seq := 1
 	if maxCode != "" {
@@ -131,10 +128,10 @@ func (s *ProjectService) GenerateProjectCode(ctx context.Context, category strin
 			seq = existingSeq + 1
 		}
 	}
-	
+
 	// Generate code
 	code := fmt.Sprintf("%s%03d", prefix, seq)
-	
+
 	// Verify uniqueness
 	var count int64
 	if err := s.db.Model(&models.Project{}).Where("code = ?", code).Count(&count).Error; err != nil {
@@ -143,22 +140,22 @@ func (s *ProjectService) GenerateProjectCode(ctx context.Context, category strin
 	if count > 0 {
 		return "", errors.New("generated project code already exists")
 	}
-	
+
 	return code, nil
 }
 
 // getCategoryCode returns the short code for a category
 func getCategoryCode(category string) string {
 	categoryCodes := map[string]string{
-		"pd_project":     "PD",  // 产品开发项目
-		"pre_research":   "PR",  // 预研项目
-		"tech_research":  "TR",  // 技术攻关
-		"platform":       "PL",  // 平台项目
-		"customization":  "CU",  // 定制项目
-		"improvement":    "IM",  // 改进项目
-		"others":         "OT",  // 其他
+		"pd_project":    "PD", // 产品开发项目
+		"pre_research":  "PR", // 预研项目
+		"tech_research": "TR", // 技术攻关
+		"platform":      "PL", // 平台项目
+		"customization": "CU", // 定制项目
+		"improvement":   "IM", // 改进项目
+		"others":        "OT", // 其他
 	}
-	
+
 	if code, ok := categoryCodes[category]; ok {
 		return code
 	}
@@ -201,47 +198,36 @@ func (s *ProjectService) CreateProject(ctx context.Context, project *models.Proj
 
 	// Set created_by
 	if userID != "" {
-		uid, err := uuid.Parse(userID)
-		if err == nil {
-			project.CreatedBy = &uid
-		}
+		project.CreatedBy = &userID
 	}
 
-	project.ID = uuid.New()
-	
+	project.ID = ulid.Make().String()
+
 	// Use transaction to create project and add creator as member
 	return s.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(project).Error; err != nil {
 			return err
 		}
-		
+
 		// Add creator as project manager if userID provided
 		if userID != "" {
-			uid, err := uuid.Parse(userID)
-			if err == nil {
-				member := models.ProjectMember{
-					ID:        uuid.New(),
-					ProjectID: project.ID,
-					UserID:    uid,
-					Role:      "manager",
-				}
-				if err := tx.Create(&member).Error; err != nil {
-					return err
-				}
+			member := models.ProjectMember{
+				ID:        ulid.Make().String(),
+				ProjectID: project.ID,
+				UserID:    userID,
+				Role:      "manager",
+			}
+			if err := tx.Create(&member).Error; err != nil {
+				return err
 			}
 		}
-		
+
 		return nil
 	})
 }
 
 // UpdateProject updates an existing project
 func (s *ProjectService) UpdateProject(ctx context.Context, id string, updates map[string]interface{}, userID string) (*models.Project, error) {
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return nil, errors.New("invalid project ID")
-	}
-
 	// Check if user has permission to update (project manager, leader, or admin)
 	if userID != "" {
 		hasPermission, err := s.checkProjectPermission(ctx, id, userID, []string{"manager", "leader", "admin"})
@@ -259,7 +245,7 @@ func (s *ProjectService) UpdateProject(ctx context.Context, id string, updates m
 	delete(updates, "code")
 	delete(updates, "created_by")
 
-	result := s.db.Model(&models.Project{}).Where("id = ?", uid).Updates(updates)
+	result := s.db.Model(&models.Project{}).Where("id = ?", id).Updates(updates)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -272,11 +258,6 @@ func (s *ProjectService) UpdateProject(ctx context.Context, id string, updates m
 
 // DeleteProject soft deletes a project
 func (s *ProjectService) DeleteProject(ctx context.Context, id string, userID string) error {
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return errors.New("invalid project ID")
-	}
-
 	// Check if user has permission to delete (project manager or admin)
 	if userID != "" {
 		hasPermission, err := s.checkProjectPermission(ctx, id, userID, []string{"manager", "admin"})
@@ -289,7 +270,7 @@ func (s *ProjectService) DeleteProject(ctx context.Context, id string, userID st
 	}
 
 	// Set status to deleted instead of actually deleting
-	result := s.db.Model(&models.Project{}).Where("id = ?", uid).Update("status", "deleted")
+	result := s.db.Model(&models.Project{}).Where("id = ?", id).Update("status", "deleted")
 	if result.Error != nil {
 		return result.Error
 	}
@@ -304,63 +285,44 @@ func (s *ProjectService) DeleteProject(ctx context.Context, id string, userID st
 func (s *ProjectService) checkProjectPermission(ctx context.Context, projectID, userID string, allowedRoles []string) (bool, error) {
 	// Check if user is admin
 	var user models.User
-	uid, err := uuid.Parse(userID)
-	if err != nil {
+	if err := s.db.First(&user, "id = ?", userID).Error; err != nil {
 		return false, err
 	}
-	
-	if err := s.db.First(&user, "id = ?", uid).Error; err != nil {
-		return false, err
-	}
-	
+
 	if user.Role == "admin" {
 		return true, nil
 	}
-	
+
 	// Check if user is project member with required role
-	projectUID, err := uuid.Parse(projectID)
-	if err != nil {
-		return false, err
-	}
-	
 	var member models.ProjectMember
-	if err := s.db.First(&member, "project_id = ? AND user_id = ?", projectUID, uid).Error; err != nil {
+	if err := s.db.First(&member, "project_id = ? AND user_id = ?", projectID, userID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return false, nil
 		}
 		return false, err
 	}
-	
+
 	for _, role := range allowedRoles {
 		if member.Role == role {
 			return true, nil
 		}
 	}
-	
+
 	// Check if user is project leader
 	var project models.Project
-	if err := s.db.First(&project, "id = ?", projectUID).Error; err != nil {
+	if err := s.db.First(&project, "id = ?", projectID).Error; err != nil {
 		return false, err
 	}
-	
-	if project.LeaderID != nil && *project.LeaderID == uid {
+
+	if project.LeaderID != nil && *project.LeaderID == userID {
 		return true, nil
 	}
-	
+
 	return false, nil
 }
 
 // AddProjectMember adds a member to a project
 func (s *ProjectService) AddProjectMember(ctx context.Context, projectID, userID string, role string, addedBy string) (*models.ProjectMember, error) {
-	projectUID, err := uuid.Parse(projectID)
-	if err != nil {
-		return nil, errors.New("invalid project ID")
-	}
-	userUID, err := uuid.Parse(userID)
-	if err != nil {
-		return nil, errors.New("invalid user ID")
-	}
-
 	// Check if adder has permission
 	if addedBy != "" {
 		hasPermission, err := s.checkProjectPermission(ctx, projectID, addedBy, []string{"manager", "admin"})
@@ -374,7 +336,7 @@ func (s *ProjectService) AddProjectMember(ctx context.Context, projectID, userID
 
 	// Check if already a member
 	var existing models.ProjectMember
-	if err := s.db.First(&existing, "project_id = ? AND user_id = ?", projectUID, userUID).Error; err == nil {
+	if err := s.db.First(&existing, "project_id = ? AND user_id = ?", projectID, userID).Error; err == nil {
 		return nil, errors.New("user is already a member of this project")
 	}
 
@@ -392,9 +354,9 @@ func (s *ProjectService) AddProjectMember(ctx context.Context, projectID, userID
 	}
 
 	member := models.ProjectMember{
-		ID:        uuid.New(),
-		ProjectID: projectUID,
-		UserID:    userUID,
+		ID:        ulid.Make().String(),
+		ProjectID: projectID,
+		UserID:    userID,
 		Role:      role,
 	}
 
@@ -404,7 +366,7 @@ func (s *ProjectService) AddProjectMember(ctx context.Context, projectID, userID
 
 	// Load user info
 	var user models.User
-	if err := s.db.First(&user, "id = ?", userUID).Error; err == nil {
+	if err := s.db.First(&user, "id = ?", userID).Error; err == nil {
 		member.User = &user
 	}
 
@@ -413,13 +375,8 @@ func (s *ProjectService) AddProjectMember(ctx context.Context, projectID, userID
 
 // GetProjectMembers returns all members of a project
 func (s *ProjectService) GetProjectMembers(ctx context.Context, projectID string) ([]models.ProjectMember, error) {
-	projectUID, err := uuid.Parse(projectID)
-	if err != nil {
-		return nil, errors.New("invalid project ID")
-	}
-
 	var members []models.ProjectMember
-	if err := s.db.Where("project_id = ?", projectUID).
+	if err := s.db.Where("project_id = ?", projectID).
 		Preload("User").
 		Order("role ASC, joined_at ASC").
 		Find(&members).Error; err != nil {
@@ -431,15 +388,6 @@ func (s *ProjectService) GetProjectMembers(ctx context.Context, projectID string
 
 // RemoveMember removes a member from a project
 func (s *ProjectService) RemoveMember(ctx context.Context, projectID, userID string, removedBy string) error {
-	projectUID, err := uuid.Parse(projectID)
-	if err != nil {
-		return errors.New("invalid project ID")
-	}
-	userUID, err := uuid.Parse(userID)
-	if err != nil {
-		return errors.New("invalid user ID")
-	}
-
 	// Check if remover has permission (can't remove self unless admin)
 	if removedBy != "" && removedBy != userID {
 		hasPermission, err := s.checkProjectPermission(ctx, projectID, removedBy, []string{"manager", "admin"})
@@ -451,7 +399,7 @@ func (s *ProjectService) RemoveMember(ctx context.Context, projectID, userID str
 		}
 	}
 
-	result := s.db.Where("project_id = ? AND user_id = ?", projectUID, userUID).Delete(&models.ProjectMember{})
+	result := s.db.Where("project_id = ? AND user_id = ?", projectID, userID).Delete(&models.ProjectMember{})
 	if result.Error != nil {
 		return result.Error
 	}
@@ -464,15 +412,6 @@ func (s *ProjectService) RemoveMember(ctx context.Context, projectID, userID str
 
 // UpdateMemberRole updates a member's role in a project
 func (s *ProjectService) UpdateMemberRole(ctx context.Context, projectID, userID, newRole string, updatedBy string) error {
-	projectUID, err := uuid.Parse(projectID)
-	if err != nil {
-		return errors.New("invalid project ID")
-	}
-	userUID, err := uuid.Parse(userID)
-	if err != nil {
-		return errors.New("invalid user ID")
-	}
-
 	// Check if updater has permission
 	if updatedBy != "" {
 		hasPermission, err := s.checkProjectPermission(ctx, projectID, updatedBy, []string{"manager", "admin"})
@@ -498,7 +437,7 @@ func (s *ProjectService) UpdateMemberRole(ctx context.Context, projectID, userID
 	}
 
 	result := s.db.Model(&models.ProjectMember{}).
-		Where("project_id = ? AND user_id = ?", projectUID, userUID).
+		Where("project_id = ? AND user_id = ?", projectID, userID).
 		Update("role", newRole)
 	if result.Error != nil {
 		return result.Error
@@ -555,8 +494,7 @@ func (s *ProjectService) UpdateProjectProgress(ctx context.Context, projectID st
 		updates["status"] = "in_progress"
 		// Set actual start date if not set
 		var project models.Project
-		uid, _ := uuid.Parse(projectID)
-		if err := s.db.First(&project, "id = ?", uid).Error; err == nil {
+		if err := s.db.First(&project, "id = ?", projectID).Error; err == nil {
 			if project.ActualStartDate == nil {
 				now := time.Now()
 				updates["actual_start_date"] = &now
@@ -572,15 +510,15 @@ func calculateProgressFromActivities(activities []models.Activity) int {
 	if len(activities) == 0 {
 		return 0
 	}
-	
+
 	totalWeight := 0
 	completedWeight := 0
-	
+
 	for _, activity := range activities {
 		// Each activity has equal weight by default
 		weight := 1
 		totalWeight += weight
-		
+
 		switch activity.Status {
 		case "completed":
 			completedWeight += weight
@@ -589,24 +527,20 @@ func calculateProgressFromActivities(activities []models.Activity) int {
 			completedWeight += weight * activity.Progress / 100
 		}
 	}
-	
+
 	if totalWeight == 0 {
 		return 0
 	}
-	
+
 	return completedWeight * 100 / totalWeight
 }
 
 // GetUserProjects returns all projects a user is a member of
 func (s *ProjectService) GetUserProjects(ctx context.Context, userID string) ([]models.Project, error) {
 	var projects []models.Project
-	userUID, err := uuid.Parse(userID)
-	if err != nil {
-		return nil, errors.New("invalid user ID")
-	}
 
 	if err := s.db.Joins("JOIN project_members ON project_members.project_id = projects.id").
-		Where("project_members.user_id = ?", userUID).
+		Where("project_members.user_id = ?", userID).
 		Order("projects.created_at DESC").
 		Find(&projects).Error; err != nil {
 		return nil, err
@@ -618,12 +552,8 @@ func (s *ProjectService) GetUserProjects(ctx context.Context, userID string) ([]
 // GetProjectActivities returns all activities for a project
 func (s *ProjectService) GetProjectActivities(ctx context.Context, projectID string) ([]models.Activity, error) {
 	var activities []models.Activity
-	projectUID, err := uuid.Parse(projectID)
-	if err != nil {
-		return nil, errors.New("invalid project ID")
-	}
 
-	if err := s.db.Where("project_id = ?", projectUID).Order("sort_order ASC").Find(&activities).Error; err != nil {
+	if err := s.db.Where("project_id = ?", projectID).Order("sort_order ASC").Find(&activities).Error; err != nil {
 		return nil, err
 	}
 
@@ -632,18 +562,13 @@ func (s *ProjectService) GetProjectActivities(ctx context.Context, projectID str
 
 // CreateActivity creates a new activity for a project
 func (s *ProjectService) CreateActivity(ctx context.Context, activity *models.Activity) error {
-	activity.ID = uuid.New()
+	activity.ID = utils.GenerateULID()
 	return s.db.Create(activity).Error
 }
 
 // UpdateActivity updates an activity
 func (s *ProjectService) UpdateActivity(ctx context.Context, id string, updates map[string]interface{}) (*models.Activity, error) {
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return nil, errors.New("invalid activity ID")
-	}
-
-	result := s.db.Model(&models.Activity{}).Where("id = ?", uid).Updates(updates)
+	result := s.db.Model(&models.Activity{}).Where("id = ?", id).Updates(updates)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -652,7 +577,7 @@ func (s *ProjectService) UpdateActivity(ctx context.Context, id string, updates 
 	}
 
 	var activity models.Activity
-	if err := s.db.First(&activity, "id = ?", uid).Error; err != nil {
+	if err := s.db.First(&activity, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 
@@ -662,50 +587,47 @@ func (s *ProjectService) UpdateActivity(ctx context.Context, id string, updates 
 // GetProjectStats returns project statistics
 func (s *ProjectService) GetProjectStats(ctx context.Context, userID string) (map[string]interface{}, error) {
 	stats := make(map[string]interface{})
-	
+
 	// Count by status
 	var statusCounts []struct {
 		Status string
 		Count  int64
 	}
 	s.db.Model(&models.Project{}).Select("status, count(*) as count").Group("status").Scan(&statusCounts)
-	
+
 	statusMap := make(map[string]int64)
 	for _, sc := range statusCounts {
 		statusMap[sc.Status] = sc.Count
 	}
 	stats["by_status"] = statusMap
-	
+
 	// Count by category
 	var categoryCounts []struct {
 		Category string
 		Count    int64
 	}
 	s.db.Model(&models.Project{}).Select("category, count(*) as count").Group("category").Scan(&categoryCounts)
-	
+
 	categoryMap := make(map[string]int64)
 	for _, cc := range categoryCounts {
 		categoryMap[cc.Category] = cc.Count
 	}
 	stats["by_category"] = categoryMap
-	
+
 	// User's projects count
 	if userID != "" {
-		userUID, err := uuid.Parse(userID)
-		if err == nil {
-			var myProjects int64
-			s.db.Model(&models.Project{}).
-				Joins("JOIN project_members ON project_members.project_id = projects.id").
-				Where("project_members.user_id = ?", userUID).
-				Count(&myProjects)
-			stats["my_projects"] = myProjects
-		}
+		var myProjects int64
+		s.db.Model(&models.Project{}).
+			Joins("JOIN project_members ON project_members.project_id = projects.id").
+			Where("project_members.user_id = ?", userID).
+			Count(&myProjects)
+		stats["my_projects"] = myProjects
 	}
-	
+
 	// Total count
 	var total int64
 	s.db.Model(&models.Project{}).Count(&total)
 	stats["total"] = total
-	
+
 	return stats, nil
 }

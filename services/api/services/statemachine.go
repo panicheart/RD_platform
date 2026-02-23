@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"gorm.io/gorm"
-	"rdp/services/api/models"
+	"rdp-platform/rdp-api/models"
 )
 
 // StateMachineService handles workflow state machine logic

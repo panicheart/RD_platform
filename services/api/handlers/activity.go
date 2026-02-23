@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"rdp/services/api/models"
-	"rdp/services/api/services"
+	"rdp-platform/rdp-api/models"
+	"rdp-platform/rdp-api/services"
 )
 
 // ActivityHandler handles activity-related HTTP requests

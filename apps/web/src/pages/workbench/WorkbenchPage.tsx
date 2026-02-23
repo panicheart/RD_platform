@@ -7,6 +7,10 @@ import {
   CheckCircleOutlined,
   PlusOutlined,
   ArrowRightOutlined,
+  BookOutlined,
+  MessageOutlined,
+  BarChartOutlined,
+  MonitorOutlined,
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { api, ApiResponse, PaginatedResponse } from '@/utils/api'
@@ -175,6 +179,70 @@ export default function WorkbenchPage() {
               </Badge>}
               title="未读消息"
               description={`${stats.notificationsCount} 条消息`}
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Phase 3 & 4 Modules */}
+      <Row gutter={16} style={{ marginBottom: 24 }}>
+        <Col span={6}>
+          <Card
+            hoverable
+            onClick={() => navigate('/knowledge')}
+            style={{ transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'pointer' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
+          >
+            <Card.Meta
+              avatar={<Avatar size={48} icon={<BookOutlined />} style={{ backgroundColor: '#722ed1' }} />}
+              title="知识库"
+              description="查看知识文档"
+            />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card
+            hoverable
+            onClick={() => navigate('/forum')}
+            style={{ transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'pointer' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
+          >
+            <Card.Meta
+              avatar={<Avatar size={48} icon={<MessageOutlined />} style={{ backgroundColor: '#eb2f96' }} />}
+              title="技术论坛"
+              description="参与技术讨论"
+            />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card
+            hoverable
+            onClick={() => navigate('/analytics')}
+            style={{ transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'pointer' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
+          >
+            <Card.Meta
+              avatar={<Avatar size={48} icon={<BarChartOutlined />} style={{ backgroundColor: '#13c2c2' }} />}
+              title="数据分析"
+              description="查看统计数据"
+            />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card
+            hoverable
+            onClick={() => navigate('/monitor')}
+            style={{ transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'pointer' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
+          >
+            <Card.Meta
+              avatar={<Avatar size={48} icon={<MonitorOutlined />} style={{ backgroundColor: '#f5222d' }} />}
+              title="系统监控"
+              description="监控系统状态"
             />
           </Card>
         </Col>
